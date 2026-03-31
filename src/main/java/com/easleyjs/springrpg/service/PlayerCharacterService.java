@@ -10,11 +10,11 @@ import java.util.List;
 public class PlayerCharacterService {
     private final PlayerCharacterRepo repo;
 
-    private PlayerCharacterService(PlayerCharacterRepo repo) {
+    public PlayerCharacterService(PlayerCharacterRepo repo) {
         this.repo = repo;
     }
 
-    private PlayerCharacter createCharacter(PlayerCharacter pc) {
+    public PlayerCharacter createCharacter(PlayerCharacter pc) {
         return repo.save(pc);
     }
 
