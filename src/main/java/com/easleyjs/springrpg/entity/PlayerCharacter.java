@@ -21,4 +21,11 @@ public class PlayerCharacter {
     private String name;
     private int xp;
     private String weapon;
+
+    public PlayerCharacter(Long id, String name, int xp, String weapon) {
+        this.id = id;
+        this.name = name;
+        this.xp = xp;
+        this.weapon = weapon;
+    }
 }
