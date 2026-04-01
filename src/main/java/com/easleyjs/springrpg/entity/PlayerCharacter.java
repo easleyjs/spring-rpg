@@ -21,4 +21,10 @@ public class PlayerCharacter {
     private String name;
     private int xp;
     private String weapon;
+
+    public PlayerCharacter(String name, int xp, String weapon) {
+        this.name = name;
+        this.xp = xp;
+        this.weapon = weapon;
+    }
 }
