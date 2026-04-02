@@ -24,4 +24,10 @@ public class PlayerCharacterController {
     List<PlayerCharacter> getAll() {
         return service.getAllCharacters();
     }
+
+    @GetMapping("/{id}")
+    public PlayerCharacter getById(@PathVariable Long id) {
+        return service.getCharacterById(id);
+    }
+
 }
