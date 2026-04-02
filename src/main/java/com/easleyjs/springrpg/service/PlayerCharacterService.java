@@ -22,4 +22,9 @@ public class PlayerCharacterService {
         return repo.findAll();
     }
 
+    public PlayerCharacter getCharacterById(Long id) {
+        return repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("No character found with id: " + id));
+    }
+
 }
