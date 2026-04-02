@@ -21,10 +21,12 @@ public class PlayerCharacter {
     private String name;
     private int xp;
     private String weapon;
+    private String armor;
 
-    public PlayerCharacter(String name, int xp, String weapon) {
+    public PlayerCharacter(String name) {
         this.name = name;
-        this.xp = xp;
-        this.weapon = weapon;
+        this.xp = 0;
+        this.weapon = "Wooden Stick";
+        this.armor = "Peasant Outfit";
     }
 }
