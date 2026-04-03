@@ -21,4 +21,7 @@ public class Encounter {
     private long monsterId;
     private int monsterHp;
 
+    public Encounter(long playerId) {
+        this.playerId = playerId;
+    }
 }
