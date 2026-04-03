@@ -20,8 +20,10 @@ public class Encounter {
     private int playerHp;
     private long monsterId;
     private int monsterHp;
+    private String status;
 
     public Encounter(long playerId) {
         this.playerId = playerId;
+        this.status = "Active";
     }
 }
