@@ -10,5 +10,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AttackRequest {
-    private long playerId;
+    private long encounterId;
 }
