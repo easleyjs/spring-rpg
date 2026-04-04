@@ -15,8 +15,9 @@ public class EncounterService {
     private EncounterRepo encRepo;
     private PlayerCharacterRepo pcRepo;
 
-    public EncounterService(EncounterRepo encRepo) {
+    public EncounterService(EncounterRepo encRepo,  PlayerCharacterRepo pcRepo) {
         this.encRepo = encRepo;
+        this.pcRepo = pcRepo;
     }
 
     public Encounter create(long playerId) {
@@ -27,8 +28,8 @@ public class EncounterService {
         encounter.setPlayerHp(1);
         encounter.setMonsterHp(0);
         encounter.setMonsterId(1);
+        encounter.setStatus("ACTIVE");
 
-
-        return encounter;
+        return encRepo.save(encounter);
     }
 }
