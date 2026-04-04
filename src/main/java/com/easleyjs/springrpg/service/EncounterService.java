@@ -8,6 +8,7 @@ import com.easleyjs.springrpg.repository.PlayerCharacterRepo;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,5 +32,9 @@ public class EncounterService {
         encounter.setStatus("ACTIVE");
 
         return encRepo.save(encounter);
+    }
+
+    public List<Encounter> getAllEncounters() {
+        return encRepo.findAll();
     }
 }
