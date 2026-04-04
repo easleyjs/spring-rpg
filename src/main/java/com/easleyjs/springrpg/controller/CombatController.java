@@ -28,7 +28,7 @@ public class CombatController {
 
     @PostMapping("/attack")
     public CombatResult attack(@RequestBody AttackRequest request) {
-        return combatService.attack(request.getPlayerId());
+        return combatService.attack(request.getEncounterId());
     }
 
     @GetMapping()
