@@ -13,11 +13,11 @@ public class CombatService {
         this.pcRepo = pcRepo;
     }
 
-    public CombatResult attack(long pcId) {
-        PlayerCharacter pc = pcRepo.findById(pcId)
+    public CombatResult attack(long encounterId) {
+        PlayerCharacter pc = pcRepo.findById(encounterId)
                 .orElseThrow(
                         () -> new RuntimeException(
-                                String.format("Character with id %d not found", pcId)));
+                                String.format("Encounter with id %d not found", encounterId)));
         int damage = 10;
         String message = String.format(
                 "%s attacks for %d damage.", pc.getName(), damage);

@@ -24,6 +24,6 @@ public class Encounter {
 
     public Encounter(long playerId) {
         this.playerId = playerId;
-        this.status = "Active";
+        this.status = "ACTIVE";
     }
 }
