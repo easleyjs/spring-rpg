@@ -34,6 +34,13 @@ public class EncounterService {
         return encRepo.save(encounter);
     }
 
+    public Encounter getEncounter(long id) {
+        Encounter encounter = encRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException(
+                        String.format("Encounter with id " + id + " not found", id)));
+        return encounter;
+    }
+
     public List<Encounter> getAllEncounters() {
         return encRepo.findAll();
     }
