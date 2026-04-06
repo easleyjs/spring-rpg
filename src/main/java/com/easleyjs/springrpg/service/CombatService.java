@@ -30,8 +30,13 @@ public class CombatService {
             throw new RuntimeException("Encounter with id " + encounterId + " is not ACTIVE");
         }
 
+        PlayerCharacter pc = pcRepo.findById(encounterId)
+                .orElseThrow(() -> new RuntimeException(
+                        String.format("PlayerCharacter with id %d not found", enc.getPlayerId())
+                ));
         int playerHp = enc.getPlayerHp();
-        int attackDamage = 10;
+        int attackDamage = ((pc.getLevel() + pc.getWeaponFlatBonus())
+                                        * pc.getWeaponDmgMultiplier());
         int monsterHp = enc.getMonsterHp();
         int monsterDamage = 10;
 
