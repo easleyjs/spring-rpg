@@ -60,13 +60,13 @@ public class CombatService {
                         "Monster Name", monsterDamage);
             } else {
                 enc.setPlayerHp(playerHp - monsterDamage);
-
+                System.out.println(enc.getPlayerHp());
                 message += String.format(
                         "\n%s attacks you for %d damage.",
                         enc.getMonsterId(), monsterDamage);
             }
         }
-
+        encRepo.save(enc);
         return new CombatResult(attackDamage, message, enc.getStatus());
     }
 }
