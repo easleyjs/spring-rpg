@@ -8,5 +8,5 @@ import lombok.Getter;
 public class CombatResult {
     public int damage;
     public String message;
-
+    String status;
 }

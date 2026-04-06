@@ -43,7 +43,7 @@ public class CombatService {
                     "You attack %s for %d damage.\n%s is dead.",
                     "Monster Name", attackDamage, "Monster Name");
 
-            return new CombatResult(attackDamage, message);
+            return new CombatResult(attackDamage, message, enc.getStatus());
         } else {
             enc.setMonsterHp(monsterHp - attackDamage);
 
@@ -67,6 +67,6 @@ public class CombatService {
             }
         }
 
-        return new CombatResult(attackDamage, message);
+        return new CombatResult(attackDamage, message, enc.getStatus());
     }
 }
