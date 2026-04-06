@@ -31,6 +31,11 @@ public class CombatController {
         return combatService.attack(request.getEncounterId());
     }
 
+    @GetMapping("/{id}")
+    public Encounter getEncounter(@PathVariable long id) {
+        return encounterService.getEncounter(id);
+    }
+
     @GetMapping()
     public List<Encounter> getAllEncounters() {
         return encounterService.getAllEncounters();

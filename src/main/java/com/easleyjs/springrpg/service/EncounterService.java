@@ -26,12 +26,19 @@ public class EncounterService {
                 .orElseThrow(() -> new RuntimeException(
                         String.format("Character with id %d not found", playerId)));
         Encounter encounter = new Encounter(pc.getId());
-        encounter.setPlayerHp(1);
-        encounter.setMonsterHp(0);
+        encounter.setPlayerHp(100);
+        encounter.setMonsterHp(100);
         encounter.setMonsterId(1);
         encounter.setStatus("ACTIVE");
 
         return encRepo.save(encounter);
+    }
+
+    public Encounter getEncounter(long id) {
+        Encounter encounter = encRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException(
+                        String.format("Encounter with id " + id + " not found", id)));
+        return encounter;
     }
 
     public List<Encounter> getAllEncounters() {
