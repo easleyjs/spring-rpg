@@ -26,8 +26,8 @@ public class EncounterService {
                 .orElseThrow(() -> new RuntimeException(
                         String.format("Character with id %d not found", playerId)));
         Encounter encounter = new Encounter(pc.getId());
-        encounter.setPlayerHp(1);
-        encounter.setMonsterHp(0);
+        encounter.setPlayerHp(100);
+        encounter.setMonsterHp(100);
         encounter.setMonsterId(1);
         encounter.setStatus("ACTIVE");
 
