@@ -7,8 +7,6 @@ import com.easleyjs.springrpg.repository.EncounterRepo;
 import org.springframework.stereotype.Service;
 import com.easleyjs.springrpg.repository.PlayerCharacterRepo;
 
-import java.util.Objects;
-
 @Service
 public class CombatService {
     private final PlayerCharacterRepo pcRepo;
