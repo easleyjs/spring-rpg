@@ -18,7 +18,7 @@ public class CombatService {
     }
 
     public CombatResult attack(long encounterId) {
-        String message = "";
+        String message;
         Encounter enc = encRepo.findById(encounterId)
                 .orElseThrow(
                         () -> new RuntimeException(
