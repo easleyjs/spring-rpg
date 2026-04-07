@@ -27,7 +27,7 @@ public class EncounterService {
                         String.format("Character with id %d not found", playerId)));
         Encounter encounter = new Encounter(pc.getId());
         encounter.setPlayerHp(100);
-        encounter.setMonsterHp(100);
+        encounter.setMonsterHp(30);
         encounter.setMonsterId(1);
         encounter.setStatus("ACTIVE");
 
