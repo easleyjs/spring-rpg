@@ -44,7 +44,7 @@ public class CombatService {
             encRepo.save(enc);
 
             message = String.format(
-                    "You attack %s for %d damage.\n%s is dead.",
+                    "You attack %s for %d damage.\n%s is dead.\nYou gained +10 XP",
                     "Monster Name", attackDamage, "Monster Name");
 
             pc.setXp(pc.getXp() + 10);
