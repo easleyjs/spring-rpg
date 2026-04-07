@@ -49,6 +49,13 @@ public class CombatService {
                     "You attack %s for %d damage.\n%s is dead.",
                     "Monster Name", attackDamage, "Monster Name");
 
+            pc.setXp(pc.getXp() + 10);
+            if (pc.getXp() >= 100) {
+                pc.setLevel(pc.getLevel() + 1);
+                pc.setXp(pc.getXp() - 100);
+            }
+            pcRepo.save(pc);
+
             return new CombatResult(attackDamage, message, enc.getStatus());
         } else {
             enc.setMonsterHp(monsterHp - attackDamage);
