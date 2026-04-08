@@ -10,6 +10,8 @@ import com.easleyjs.springrpg.repository.EncounterRepo;
 import org.springframework.stereotype.Service;
 import com.easleyjs.springrpg.repository.PlayerCharacterRepo;
 
+import java.text.Format;
+
 @Service
 public class CombatService {
     private final PlayerCharacterRepo pcRepo;
@@ -39,12 +41,16 @@ public class CombatService {
         int attackDamage = calculateDamage(pc);
         int monsterDamage = 10;
 
+        System.out.println("Attack happend in encounter:" + encounterId);
+        System.out.println("Damage: " + attackDamage);
+        System.out.println("Monster Damage: " + monsterDamage);
+
         applyPlayerAttack(enc, attackDamage);
 
         if (enc.getMonsterHp() == 0) {
             enc.setStatus(EncounterStatus.WON);
             encRepo.save(enc);
-
+            System.out.println("Encounter" + encounterId + " won");
             message = String.format(
                     "You attack %s for %d damage.\n%s is dead.\nYou gained +10 XP",
                     "Monster Name", attackDamage, "Monster Name");
@@ -71,7 +77,7 @@ public class CombatService {
 
             if (enc.getPlayerHp() == 0) {
                 enc.setStatus(EncounterStatus.LOST);
-
+                System.out.println("Encounter" + encounterId+ " lost");
                 message += String.format(
                         "\n%s attacks you for %d damage.\nYou are dead.",
                         "Monster Name", monsterDamage);
