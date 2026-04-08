@@ -22,8 +22,8 @@ public class PlayerCharacterController {
 
     @GetMapping
     List<PlayerCharacter> getAll(
-            @RequestParam int page,
-            @RequestParam int size
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
         return service.getAllCharacters(page, size).getContent();
     }
