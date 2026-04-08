@@ -2,6 +2,7 @@ package com.easleyjs.springrpg.service;
 
 import com.easleyjs.springrpg.dto.EncounterStartRequest;
 import com.easleyjs.springrpg.entity.Encounter;
+import com.easleyjs.springrpg.entity.EncounterStatus;
 import com.easleyjs.springrpg.entity.PlayerCharacter;
 import com.easleyjs.springrpg.repository.EncounterRepo;
 import com.easleyjs.springrpg.repository.PlayerCharacterRepo;
@@ -29,7 +30,7 @@ public class EncounterService {
         encounter.setPlayerHp(100);
         encounter.setMonsterHp(30);
         encounter.setMonsterId(1);
-        encounter.setStatus("ACTIVE");
+        encounter.setStatus(EncounterStatus.ACTIVE);
 
         return encRepo.save(encounter);
     }

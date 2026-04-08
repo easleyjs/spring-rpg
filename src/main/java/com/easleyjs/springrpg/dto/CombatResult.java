@@ -1,5 +1,6 @@
 package com.easleyjs.springrpg.dto;
 
+import com.easleyjs.springrpg.entity.EncounterStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,5 +11,5 @@ public class CombatResult {
     public int monsterHp;
     public int damage;
     public String message;
-    String status;
+    EncounterStatus status;
 }

@@ -2,6 +2,7 @@ package com.easleyjs.springrpg.service;
 
 import com.easleyjs.springrpg.dto.CombatResult;
 import com.easleyjs.springrpg.entity.Encounter;
+import com.easleyjs.springrpg.entity.EncounterStatus;
 import com.easleyjs.springrpg.entity.PlayerCharacter;
 import com.easleyjs.springrpg.exception.InvalidStateException;
 import com.easleyjs.springrpg.exception.NotFoundException;
@@ -26,7 +27,7 @@ public class CombatService {
                         () -> new NotFoundException(
                                 String.format("Encounter with id %d not found", encounterId)));
 
-        if (!"ACTIVE".equals(enc.getStatus())) {
+        if (enc.getStatus() != EncounterStatus.ACTIVE) {
             throw new InvalidStateException("Encounter with id " + encounterId + " is not ACTIVE");
         }
 
@@ -42,7 +43,7 @@ public class CombatService {
         int monsterDamage = 10;
 
         if ((monsterHp - attackDamage) < 1) {
-            enc.setStatus("WON");
+            enc.setStatus(EncounterStatus.WON);
             encRepo.save(enc);
 
             message = String.format(
@@ -70,7 +71,7 @@ public class CombatService {
                     "Monster Name", attackDamage);
 
             if (playerHp - monsterDamage < 1) {
-                enc.setStatus("LOST");
+                enc.setStatus(EncounterStatus.LOST);
                 enc.setPlayerHp(0);
 
                 message += String.format(
