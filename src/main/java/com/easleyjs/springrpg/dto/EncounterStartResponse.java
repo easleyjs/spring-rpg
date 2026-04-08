@@ -3,13 +3,14 @@ package com.easleyjs.springrpg.dto;
 import com.easleyjs.springrpg.entity.EncounterStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
-@Getter
 @AllArgsConstructor
-public class CombatResult {
-    public int playerHp;
-    public int monsterHp;
-    public int damage;
-    public String message;
+@Getter
+@Setter
+public class EncounterStartResponse {
+    long encounterId;
+    int playerHp;
+    int monsterHp;
     EncounterStatus status;
 }

@@ -2,8 +2,11 @@ package com.easleyjs.springrpg.service;
 
 import com.easleyjs.springrpg.entity.PlayerCharacter;
 import com.easleyjs.springrpg.repository.PlayerCharacterRepo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -20,8 +23,12 @@ public class PlayerCharacterService {
         return repo.save(pc);
     }
 
-    public List<PlayerCharacter> getAllCharacters() {
-        return repo.findAll();
+    public Page<PlayerCharacter> getAllCharacters(
+            int page,
+            int size
+    ) {
+        int safeSize = Math.min(size, 50);
+        return repo.findAll(PageRequest.of(page, safeSize));
     }
 
     public PlayerCharacter getCharacterById(Long id) {
