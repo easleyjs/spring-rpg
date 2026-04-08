@@ -3,6 +3,8 @@ package com.easleyjs.springrpg.service;
 import com.easleyjs.springrpg.dto.CombatResult;
 import com.easleyjs.springrpg.entity.Encounter;
 import com.easleyjs.springrpg.entity.PlayerCharacter;
+import com.easleyjs.springrpg.exception.InvalidStateException;
+import com.easleyjs.springrpg.exception.NotFoundException;
 import com.easleyjs.springrpg.repository.EncounterRepo;
 import org.springframework.stereotype.Service;
 import com.easleyjs.springrpg.repository.PlayerCharacterRepo;
@@ -21,15 +23,15 @@ public class CombatService {
         String message;
         Encounter enc = encRepo.findById(encounterId)
                 .orElseThrow(
-                        () -> new RuntimeException(
+                        () -> new NotFoundException(
                                 String.format("Encounter with id %d not found", encounterId)));
 
         if (!"ACTIVE".equals(enc.getStatus())) {
-            throw new RuntimeException("Encounter with id " + encounterId + " is not ACTIVE");
+            throw new InvalidStateException("Encounter with id " + encounterId + " is not ACTIVE");
         }
 
         PlayerCharacter pc = pcRepo.findById(enc.getPlayerId())
-                .orElseThrow(() -> new RuntimeException(
+                .orElseThrow(() -> new NotFoundException(
                         String.format("PlayerCharacter with id %d not found", enc.getPlayerId())
                 ));
         int playerHp = enc.getPlayerHp();
