@@ -27,6 +27,9 @@ public class PlayerCharacterService {
             int page,
             int size
     ) {
+        if (page < 1) page = 0;
+        if (size < 1) size = 1;
+
         int safeSize = Math.min(size, 50);
         return repo.findAll(PageRequest.of(page, safeSize));
     }

@@ -32,7 +32,7 @@ public class EncounterService {
         encounter.setMonsterHp(30);
         encounter.setMonsterId(1);
         encounter.setStatus(EncounterStatus.ACTIVE);
-
+        System.out.println("Encounter" + encounter.getId() + " created");
         return encRepo.save(encounter);
     }
 
