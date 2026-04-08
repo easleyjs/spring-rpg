@@ -54,8 +54,12 @@ public class CombatService {
             }
             pcRepo.save(pc);
 
-            return new CombatResult(enc.getPlayerHp(), enc.getMonsterHp(),
-                    attackDamage, message, enc.getStatus());
+            return new CombatResult(
+                    enc.getPlayerHp(),
+                    enc.getMonsterHp(),
+                    attackDamage,
+                    message,
+                    enc.getStatus());
         } else {
             enc.setMonsterHp(monsterHp - attackDamage);
 
@@ -79,7 +83,11 @@ public class CombatService {
             }
         }
         encRepo.save(enc);
-        return new CombatResult(enc.getPlayerHp(), enc.getMonsterHp(),
-                attackDamage, message, enc.getStatus());
+        return new CombatResult(
+                enc.getPlayerHp(),
+                enc.getMonsterHp(),
+                attackDamage,
+                message,
+                enc.getStatus());
     }
 }
