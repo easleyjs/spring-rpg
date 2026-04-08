@@ -41,7 +41,7 @@ public class CombatService {
 
         applyPlayerAttack(enc, attackDamage);
 
-        if (enc.getMonsterHp() < 1) {
+        if (enc.getMonsterHp() == 0) {
             enc.setStatus(EncounterStatus.WON);
             encRepo.save(enc);
 
@@ -69,9 +69,8 @@ public class CombatService {
 
             applyMonsterAttack(enc, monsterDamage);
 
-            if (enc.getPlayerHp() < 1) {
+            if (enc.getPlayerHp() == 0) {
                 enc.setStatus(EncounterStatus.LOST);
-                enc.setPlayerHp(0);
 
                 message += String.format(
                         "\n%s attacks you for %d damage.\nYou are dead.",
