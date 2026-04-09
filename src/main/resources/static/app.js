@@ -19,7 +19,7 @@ term.onData(e => {
 
 async function handleCommand(cmd) {
     if (cmd === "new") {
-        const res = await fetch("http://localhost:8080/characters/", {
+        const res = await fetch("http://localhost:8080/characters", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name: "Shadowbear" })
