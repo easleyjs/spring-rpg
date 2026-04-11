@@ -19,7 +19,7 @@ term.onData(e => {
 
 async function handleCommand(cmd) {
     if (cmd === "new") {
-        const res = await fetch("http://localhost:8080/characters", {
+        const res = await fetch("/characters", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name: "Shadowbear" })
@@ -32,7 +32,7 @@ async function handleCommand(cmd) {
     }
 
     if (cmd === "start") {
-        const res = await fetch("http://localhost:8080/combat/create", {
+        const res = await fetch("/combat/create", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ playerId: 1 })
@@ -45,7 +45,7 @@ async function handleCommand(cmd) {
     }
 
     if (cmd === "attack") {
-        const res = await fetch("http://localhost:8080/combat/attack", {
+        const res = await fetch("/combat/attack", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ encounterId: window.currentEncounterId })
