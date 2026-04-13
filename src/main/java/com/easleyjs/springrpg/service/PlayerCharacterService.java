@@ -1,26 +1,53 @@
 package com.easleyjs.springrpg.service;
 
+import com.easleyjs.springrpg.dto.createPlayerRequest;
+import com.easleyjs.springrpg.entity.InventoryItem;
+import com.easleyjs.springrpg.entity.Item;
 import com.easleyjs.springrpg.entity.PlayerCharacter;
+import com.easleyjs.springrpg.exception.NotFoundException;
+import com.easleyjs.springrpg.repository.InventoryRepo;
+import com.easleyjs.springrpg.repository.ItemRepo;
 import com.easleyjs.springrpg.repository.PlayerCharacterRepo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PlayerCharacterService {
-    private final PlayerCharacterRepo repo;
+    private final PlayerCharacterRepo playerRepo;
+    private final ItemRepo itemRepo;
+    private final InventoryRepo inventoryRepo;
 
-    public PlayerCharacterService(PlayerCharacterRepo repo) {
-        this.repo = repo;
+
+    public PlayerCharacterService(PlayerCharacterRepo playerRepo,
+                                  ItemRepo itemRepo,
+                                  InventoryRepo inventoryRepo) {
+        this.playerRepo = playerRepo;
+        this.itemRepo = itemRepo;
+        this.inventoryRepo = inventoryRepo;
     }
 
-    public PlayerCharacter createCharacter(PlayerCharacter pc) {
-        return repo.save(pc);
+    public PlayerCharacter createCharacter(createPlayerRequest req) {
+        PlayerCharacter player = new PlayerCharacter();
+        player.setName(req.getName());
+        playerRepo.save(player);
+
+        // Give player starting gear
+        Item starterSword = itemRepo.findByName("Wooden Stick")
+                .orElseThrow(() -> new NotFoundException("Item not found."));
+        InventoryItem invItem = new InventoryItem();
+        invItem.setPlayer(player);
+        invItem.setItem(starterSword);
+        invItem.setQuantity(1);
+        invItem.setEquipped(true);
+
+        inventoryRepo.save(invItem);
+
+        return player;
     }
 
     public Page<PlayerCharacter> getAllCharacters(
@@ -31,11 +58,11 @@ public class PlayerCharacterService {
         if (size < 1) size = 1;
 
         int safeSize = Math.min(size, 50);
-        return repo.findAll(PageRequest.of(page, safeSize));
+        return playerRepo.findAll(PageRequest.of(page, safeSize));
     }
 
     public PlayerCharacter getCharacterById(Long id) {
-        return repo.findById(id)
+        return playerRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         String.format("Character with id %d not found", id)));
