@@ -1,5 +1,6 @@
 package com.easleyjs.springrpg.controller;
 
+import com.easleyjs.springrpg.dto.createPlayerRequest;
 import com.easleyjs.springrpg.entity.PlayerCharacter;
 import com.easleyjs.springrpg.service.PlayerCharacterService;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ public class PlayerCharacterController {
     }
 
     @PostMapping
-    public PlayerCharacter create(@RequestBody PlayerCharacter pc) {
+    public PlayerCharacter create(@RequestBody createPlayerRequest pc) {
         return service.createCharacter(pc);
     }
 

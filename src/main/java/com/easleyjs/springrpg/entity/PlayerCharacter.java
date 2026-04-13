@@ -1,12 +1,12 @@
 package com.easleyjs.springrpg.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -26,15 +26,15 @@ public class PlayerCharacter {
     private int weaponFlatBonus;
     private int weaponDmgMultiplier;
     private String armor;
+    private int defenseBonus;
+    @OneToMany(mappedBy = "player")
+    private List<InventoryItem> inventoryItems = new ArrayList<>();
 
     public PlayerCharacter(String name) {
         this.name = name;
         this.xp = 0;
         this.level = 1;
         this.health = 100;
-        this.weapon = "Wooden Stick";
-        this.weaponFlatBonus = 0;
         this.weaponDmgMultiplier = 1;
-        this.armor = "Peasant Outfit";
     }
 }
