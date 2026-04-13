@@ -10,13 +10,14 @@ import lombok.Setter;
 @NoArgsConstructor
 
 @Entity
-public class Item {
+public class InventoryItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private String name;
-    private int damageBonus;
-    private int price;
-    @Enumerated(EnumType.STRING)
-    ItemType itemType;
+    private Long id;
+    @ManyToOne(optional = false)
+    private PlayerCharacter player;
+    @ManyToOne(optional = false)
+    private Item item;
+    private int quantity;
+    private boolean equipped;
 }
