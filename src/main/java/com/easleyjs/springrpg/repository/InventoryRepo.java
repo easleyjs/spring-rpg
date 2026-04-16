@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface InventoryRepo extends
         JpaRepository<InventoryItem, Long> {
-    public List<InventoryItem> findByPlayerId(long pcId);
+    public List<InventoryItem> findAllByPlayerId(long pcId);
 }

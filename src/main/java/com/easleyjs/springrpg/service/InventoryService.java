@@ -26,14 +26,33 @@ public class InventoryService {
         this.playerRepo = playerRepo;
     }
 
-    //to-do: make CharacterInventory DTO for this
-    public List<InventoryItem> getById(long pcId) {
+    public List<InventoryItem> getAllByPlayerId(long pcId) {
         //List<InventoryItem> invItems =
-        return invRepo.findByPlayerId(pcId);
+        return invRepo.findAllByPlayerId(pcId);
     }
-    /*
-    TO-DO: addInventoryItem
-     */
+
+    public EquipResponse addInventoryItem(EquipRequest req) {
+        Item item = itemRepo.findById(req.getItemId())
+                .orElseThrow(() -> new NotFoundException("Item Not Found"));
+
+        PlayerCharacter pc = playerRepo.findById(req.getPlayerId())
+                .orElseThrow(() -> new NotFoundException("Player not found."));
+
+        InventoryItem inventoryItem = invRepo.save(
+                new InventoryItem(
+                    pc,
+                    item,
+                    1,
+                    false
+        ));
+
+        return new EquipResponse(
+                inventoryItem.getId(),
+                inventoryItem.getItem().getName(),
+                pc.getId()
+        );
+    }
+
     public EquipResponse equipInventoryItem(EquipRequest req) {
         InventoryItem item = invRepo.findById(req.getItemId())
                 .orElseThrow(() -> new NotFoundException("Item not in inventory"));
@@ -49,7 +68,7 @@ public class InventoryService {
             throw new RuntimeException("Cannot equip non-weapons");
         }
 
-        List<InventoryItem> items = invRepo.findByPlayerId(pc.getId());
+        List<InventoryItem> items = invRepo.findAllByPlayerId(pc.getId());
 
         items.stream()
                 .filter(ii -> ii.getItem().getItemType() == ItemType.WEAPON)
