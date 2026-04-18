@@ -16,6 +16,7 @@ public class Item {
     private int id;
     private String name;
     private int damageBonus;
+    private int damageMultiplier;
     private int defenseBonus;
     private int price;
 
@@ -25,11 +26,13 @@ public class Item {
     public Item(
             String name,
             int damageBonus,
+            int damageMultiplier,
             int defenseBonus,
             int price,
             ItemType itemType) {
         this.name = name;
         this.damageBonus = damageBonus;
+        this.damageMultiplier = damageMultiplier;
         this.defenseBonus = defenseBonus;
         this.price = price;
         this.itemType = itemType;

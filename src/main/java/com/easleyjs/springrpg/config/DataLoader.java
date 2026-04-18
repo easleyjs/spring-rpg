@@ -19,6 +19,7 @@ public class DataLoader {
                 itemRepo.save(new Item(
                         "Wooden Stick",
                         0,
+                        1,
                         0,
                         0,
                         ItemType.WEAPON
@@ -28,11 +29,13 @@ public class DataLoader {
                         0,
                         0,
                         0,
+                        0,
                         ItemType.ARMOR
                 ));
                 itemRepo.save(new Item(
                         "Wooden Sword",
                         2,
+                        1,
                         0,
                         10,
                         ItemType.WEAPON
@@ -40,6 +43,7 @@ public class DataLoader {
                 itemRepo.save(new Item(
                         "Iron Sword",
                         5,
+                        1,
                         0,
                         25,
                         ItemType.WEAPON
