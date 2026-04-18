@@ -42,10 +42,14 @@ public class CombatService {
                         String.format("PlayerCharacter with id %d not found", enc.getPlayerId())
                 ));
 
+        InventoryItem invWeapon = invRepo.findByPlayerIdAndEquippedTrueAndItemType(
+                pc.getId(),
+                ItemType.WEAPON).orElseThrow(
+                        () -> new NotFoundException("Weapon not found for player"));
         int attackDamage = calculateDamage(pc);
         int monsterDamage = 10;
 
-        System.out.println("Attack happend in encounter:" + encounterId);
+        System.out.println("Attack happened in encounter:" + encounterId);
         System.out.println("Damage: " + attackDamage);
         System.out.println("Monster Damage: " + monsterDamage);
 
@@ -74,8 +78,8 @@ public class CombatService {
                     enc.getStatus());
         } else {
             message = String.format(
-                    "You attack %s for %d damage.",
-                    "Monster Name", attackDamage);
+                    "You attack %s with %s for %d damage.",
+                    "Monster Name", invWeapon.getItem().getName(), attackDamage);
 
             applyMonsterAttack(enc, monsterDamage);
 
