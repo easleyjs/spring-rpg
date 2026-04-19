@@ -22,8 +22,7 @@ public class PlayerCharacter {
     private int xp;
     private int level;
     private int health;
-    private String armor;
-    private int defenseBonus;
+
     @OneToMany(mappedBy = "player")
     private List<InventoryItem> inventoryItems = new ArrayList<>();
 

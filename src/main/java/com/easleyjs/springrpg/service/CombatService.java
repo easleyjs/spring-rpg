@@ -42,7 +42,7 @@ public class CombatService {
                         String.format("PlayerCharacter with id %d not found", enc.getPlayerId())
                 ));
 
-        InventoryItem invWeapon = invRepo.findByPlayerIdAndEquippedTrueAndItemType(
+        InventoryItem invWeapon = invRepo.findByPlayerIdAndEquippedTrueAndItem_ItemType(
                 pc.getId(),
                 ItemType.WEAPON).orElseThrow(
                         () -> new NotFoundException("Weapon not found for player"));
@@ -107,7 +107,7 @@ public class CombatService {
     private int calculateDamage(PlayerCharacter pc) {
         int baseAttack = pc.getLevel() * 5;
 
-        InventoryItem invWeapon = invRepo.findByPlayerIdAndEquippedTrueAndItemType(
+        InventoryItem invWeapon = invRepo.findByPlayerIdAndEquippedTrueAndItem_ItemType(
                 pc.getId(),
                 ItemType.WEAPON).orElseThrow(
                         () -> new NotFoundException("Weapon not found for player."));
