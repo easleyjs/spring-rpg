@@ -22,11 +22,7 @@ public class PlayerCharacter {
     private int xp;
     private int level;
     private int health;
-    private String weapon;
-    private int weaponFlatBonus;
-    private int weaponDmgMultiplier;
-    private String armor;
-    private int defenseBonus;
+
     @OneToMany(mappedBy = "player")
     private List<InventoryItem> inventoryItems = new ArrayList<>();
 
@@ -35,6 +31,5 @@ public class PlayerCharacter {
         this.xp = 0;
         this.level = 1;
         this.health = 100;
-        this.weaponDmgMultiplier = 1;
     }
 }

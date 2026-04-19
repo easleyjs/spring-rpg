@@ -20,4 +20,11 @@ public class InventoryItem {
     private Item item;
     private int quantity;
     private boolean equipped;
+
+    public InventoryItem(PlayerCharacter player, Item item, int quantity, boolean equipped) {
+        this.player = player;
+        this.item = item;
+        this.quantity = quantity;
+        this.equipped = equipped;
+    }
 }

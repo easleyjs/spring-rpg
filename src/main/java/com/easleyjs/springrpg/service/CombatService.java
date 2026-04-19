@@ -1,12 +1,11 @@
 package com.easleyjs.springrpg.service;
 
 import com.easleyjs.springrpg.dto.CombatResult;
-import com.easleyjs.springrpg.entity.Encounter;
-import com.easleyjs.springrpg.entity.EncounterStatus;
-import com.easleyjs.springrpg.entity.PlayerCharacter;
+import com.easleyjs.springrpg.entity.*;
 import com.easleyjs.springrpg.exception.InvalidStateException;
 import com.easleyjs.springrpg.exception.NotFoundException;
 import com.easleyjs.springrpg.repository.EncounterRepo;
+import com.easleyjs.springrpg.repository.InventoryRepo;
 import org.springframework.stereotype.Service;
 import com.easleyjs.springrpg.repository.PlayerCharacterRepo;
 
@@ -15,10 +14,15 @@ import java.text.Format;
 @Service
 public class CombatService {
     private final PlayerCharacterRepo pcRepo;
+    private final InventoryRepo invRepo;
     private final EncounterRepo encRepo;
 
-    public CombatService(PlayerCharacterRepo pcRepo, EncounterRepo encRepo) {
+    public CombatService(
+            PlayerCharacterRepo pcRepo,
+            InventoryRepo invRepo,
+            EncounterRepo encRepo) {
         this.pcRepo = pcRepo;
+        this.invRepo = invRepo;
         this.encRepo = encRepo;
     }
 
@@ -38,10 +42,14 @@ public class CombatService {
                         String.format("PlayerCharacter with id %d not found", enc.getPlayerId())
                 ));
 
+        InventoryItem invWeapon = invRepo.findByPlayerIdAndEquippedTrueAndItem_ItemType(
+                pc.getId(),
+                ItemType.WEAPON).orElseThrow(
+                        () -> new NotFoundException("Weapon not found for player"));
         int attackDamage = calculateDamage(pc);
         int monsterDamage = 10;
 
-        System.out.println("Attack happend in encounter:" + encounterId);
+        System.out.println("Attack happened in encounter:" + encounterId);
         System.out.println("Damage: " + attackDamage);
         System.out.println("Monster Damage: " + monsterDamage);
 
@@ -70,8 +78,8 @@ public class CombatService {
                     enc.getStatus());
         } else {
             message = String.format(
-                    "You attack %s for %d damage.",
-                    "Monster Name", attackDamage);
+                    "You attack %s with %s for %d damage.",
+                    "Monster Name", invWeapon.getItem().getName(), attackDamage);
 
             applyMonsterAttack(enc, monsterDamage);
 
@@ -98,8 +106,17 @@ public class CombatService {
 
     private int calculateDamage(PlayerCharacter pc) {
         int baseAttack = pc.getLevel() * 5;
-        return (int)((baseAttack + pc.getWeaponFlatBonus())
-                * pc.getWeaponDmgMultiplier());
+
+        InventoryItem invWeapon = invRepo.findByPlayerIdAndEquippedTrueAndItem_ItemType(
+                pc.getId(),
+                ItemType.WEAPON).orElseThrow(
+                        () -> new NotFoundException("Weapon not found for player."));
+
+        int weaponFlatBonus = invWeapon.getItem().getDamageBonus();
+        int weaponDmgMultiplier = invWeapon.getItem().getDamageMultiplier();
+
+        return (int)((baseAttack + weaponFlatBonus)
+                * weaponDmgMultiplier);
     }
 
     private void applyPlayerAttack(Encounter enc, int damage) {
