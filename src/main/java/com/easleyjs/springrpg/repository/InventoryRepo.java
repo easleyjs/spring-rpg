@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface InventoryRepo extends
         JpaRepository<InventoryItem, Long> {
     public List<InventoryItem> findAllByPlayerId(long pcId);
-    public Optional<InventoryItem> findByPlayerIdAndEquippedTrueAndItemType(
+    public Optional<InventoryItem> findByPlayerIdAndEquippedTrueAndItem_ItemType(
             Long playerId,
             ItemType type
     );

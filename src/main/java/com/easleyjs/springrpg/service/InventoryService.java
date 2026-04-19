@@ -10,9 +10,11 @@ import com.easleyjs.springrpg.exception.NotFoundException;
 import com.easleyjs.springrpg.repository.InventoryRepo;
 import com.easleyjs.springrpg.repository.ItemRepo;
 import com.easleyjs.springrpg.repository.PlayerCharacterRepo;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class InventoryService {
     InventoryRepo invRepo;
     ItemRepo itemRepo;
