@@ -13,6 +13,7 @@ import com.easleyjs.springrpg.repository.PlayerCharacterRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class InventoryService {
@@ -40,17 +41,28 @@ public class InventoryService {
         PlayerCharacter pc = playerRepo.findById(req.getPlayerId())
                 .orElseThrow(() -> new NotFoundException("Player not found."));
 
-        InventoryItem inventoryItem = invRepo.save(
-                new InventoryItem(
+        InventoryItem invItem;
+
+        Optional<InventoryItem> optItem = invRepo.findByPlayerIdAndItemId(
+                pc.getId(), item.getId());
+
+        if (optItem.isPresent()) {
+            invItem = optItem.get();
+            invItem.setQuantity(invItem.getQuantity() + 1);
+        } else {
+            invItem = new InventoryItem(
                     pc,
                     item,
                     1,
                     false
-        ));
+            );
+        }
+
+        invRepo.save(invItem);
 
         return new EquipResponse(
-                inventoryItem.getId(),
-                inventoryItem.getItem().getName(),
+                invItem.getId(),
+                invItem.getItem().getName(),
                 pc.getId()
         );
     }

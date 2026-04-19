@@ -3,6 +3,7 @@ package com.easleyjs.springrpg.controller;
 import com.easleyjs.springrpg.dto.CombatResult;
 import com.easleyjs.springrpg.dto.EquipRequest;
 import com.easleyjs.springrpg.dto.EquipResponse;
+import com.easleyjs.springrpg.dto.InventoryItemResponse;
 import com.easleyjs.springrpg.entity.InventoryItem;
 import com.easleyjs.springrpg.repository.InventoryRepo;
 import com.easleyjs.springrpg.service.InventoryService;
@@ -21,8 +22,11 @@ public class InventoryController {
     }
 
     @GetMapping("/{id}")
-    public List<InventoryItem> getInventory(@PathVariable long id) {
-        return invService.getAllByPlayerId(id);
+    public List<InventoryItemResponse> getInventory(@PathVariable long id) {
+            return invService.getAllByPlayerId(id)
+                    .stream()
+                    .map(InventoryItemResponse::new)
+                    .toList();
     }
 
     @PostMapping("/add")

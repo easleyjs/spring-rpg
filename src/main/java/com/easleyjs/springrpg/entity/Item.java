@@ -13,7 +13,7 @@ import lombok.Setter;
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
     private String name;
     private int damageBonus;
     private int damageMultiplier;
