@@ -1,6 +1,8 @@
 package com.easleyjs.springrpg.controller;
 
+import com.easleyjs.springrpg.dto.PlayerMoveResponse;
 import com.easleyjs.springrpg.dto.createPlayerRequest;
+import com.easleyjs.springrpg.entity.Location;
 import com.easleyjs.springrpg.entity.PlayerCharacter;
 import com.easleyjs.springrpg.service.PlayerCharacterService;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +34,13 @@ public class PlayerCharacterController {
     @GetMapping("/{id}")
     public PlayerCharacter getById(@PathVariable Long id) {
         return service.getCharacterById(id);
+    }
+
+    @PostMapping("/move")
+    public PlayerMoveResponse move(
+            @RequestBody Location location,
+            @RequestBody long pcId) {
+        return service.moveCharacter(pcId, location);
     }
 
 }
