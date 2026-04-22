@@ -53,7 +53,7 @@ public class PlayerCharacterService {
         return player;
     }
 
-    public Page<PlayerCharacter> getAllCharacters(
+    public Page<PlayerCharacterResponse> getAllCharacters(
             int page,
             int size
     ) {
@@ -61,7 +61,11 @@ public class PlayerCharacterService {
         if (size < 1) size = 1;
 
         int safeSize = Math.min(size, 50);
-        return playerRepo.findAll(PageRequest.of(page, safeSize));
+
+        PageRequest pageable = PageRequest.of(page, safeSize);
+
+        return playerRepo.findAll(pageable)
+                .map(this::toResponse);
     }
 
     public PlayerCharacterResponse getCharacterById(Long id) {
@@ -90,6 +94,17 @@ public class PlayerCharacterService {
         return new PlayerMoveResponse(
                 pcId,
                 location
+        );
+    }
+
+    PlayerCharacterResponse toResponse(PlayerCharacter pc) {
+        return new PlayerCharacterResponse(
+                pc.getId(),
+                pc.getName(),
+                pc.getXp(),
+                pc.getLevel(),
+                pc.getHealth(),
+                pc.getLocation()
         );
     }
 
