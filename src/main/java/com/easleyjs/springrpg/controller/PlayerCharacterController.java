@@ -1,5 +1,6 @@
 package com.easleyjs.springrpg.controller;
 
+import com.easleyjs.springrpg.dto.MoveRequest;
 import com.easleyjs.springrpg.dto.PlayerCharacterResponse;
 import com.easleyjs.springrpg.dto.PlayerMoveResponse;
 import com.easleyjs.springrpg.dto.createPlayerRequest;
@@ -39,9 +40,8 @@ public class PlayerCharacterController {
 
     @PostMapping("/move")
     public PlayerMoveResponse move(
-            @RequestBody Location location,
-            @RequestBody long pcId) {
-        return service.moveCharacter(pcId, location);
+            @RequestBody MoveRequest req) {
+        return service.moveCharacter(req);
     }
 
 }

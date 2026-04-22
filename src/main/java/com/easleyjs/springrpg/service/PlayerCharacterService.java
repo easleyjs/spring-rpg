@@ -1,5 +1,6 @@
 package com.easleyjs.springrpg.service;
 
+import com.easleyjs.springrpg.dto.MoveRequest;
 import com.easleyjs.springrpg.dto.PlayerCharacterResponse;
 import com.easleyjs.springrpg.dto.PlayerMoveResponse;
 import com.easleyjs.springrpg.dto.createPlayerRequest;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
@@ -37,6 +39,7 @@ public class PlayerCharacterService {
     public PlayerCharacter createCharacter(createPlayerRequest req) {
         PlayerCharacter player = new PlayerCharacter();
         player.setName(req.getName());
+        player.setLocation(Location.TOWN);
         playerRepo.save(player);
 
         // Give player starting gear
@@ -83,17 +86,18 @@ public class PlayerCharacterService {
         );
     }
 
-    public PlayerMoveResponse moveCharacter(long pcId, Location location) {
-        PlayerCharacter pc = playerRepo.findById(pcId)
-                .orElseThrow(() -> new NotFoundException("Player with id " + pcId + " not found"));
+    public PlayerMoveResponse moveCharacter(MoveRequest req) {
+        PlayerCharacter pc = playerRepo.findById(req.getPcId())
+                .orElseThrow(() -> new NotFoundException(
+                        "Player with id " + req.getPcId() + " not found"));
 
-        pc.setLocation(location);
+        pc.setLocation(req.getLocation());
 
         playerRepo.save(pc);
 
         return new PlayerMoveResponse(
-                pcId,
-                location
+                req.getPcId(),
+                req.getLocation()
         );
     }
 
