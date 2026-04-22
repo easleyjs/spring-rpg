@@ -1,5 +1,6 @@
 package com.easleyjs.springrpg.controller;
 
+import com.easleyjs.springrpg.dto.PlayerCharacterResponse;
 import com.easleyjs.springrpg.dto.PlayerMoveResponse;
 import com.easleyjs.springrpg.dto.createPlayerRequest;
 import com.easleyjs.springrpg.entity.Location;
@@ -32,7 +33,7 @@ public class PlayerCharacterController {
     }
 
     @GetMapping("/{id}")
-    public PlayerCharacter getById(@PathVariable Long id) {
+    public PlayerCharacterResponse getById(@PathVariable Long id) {
         return service.getCharacterById(id);
     }
 

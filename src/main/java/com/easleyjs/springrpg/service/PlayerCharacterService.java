@@ -1,5 +1,6 @@
 package com.easleyjs.springrpg.service;
 
+import com.easleyjs.springrpg.dto.PlayerCharacterResponse;
 import com.easleyjs.springrpg.dto.PlayerMoveResponse;
 import com.easleyjs.springrpg.dto.createPlayerRequest;
 import com.easleyjs.springrpg.entity.InventoryItem;
@@ -63,11 +64,19 @@ public class PlayerCharacterService {
         return playerRepo.findAll(PageRequest.of(page, safeSize));
     }
 
-    public PlayerCharacter getCharacterById(Long id) {
-        return playerRepo.findById(id)
+    public PlayerCharacterResponse getCharacterById(Long id) {
+        PlayerCharacter pc = playerRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         String.format("Character with id %d not found", id)));
+        return new PlayerCharacterResponse(
+                pc.getId(),
+                pc.getName(),
+                pc.getXp(),
+                pc.getLevel(),
+                pc.getHealth(),
+                pc.getLocation()
+        );
     }
 
     public PlayerMoveResponse moveCharacter(long pcId, Location location) {
