@@ -10,7 +10,7 @@ import lombok.Setter;
 /**
  * Equip item request for equipping intentory items
  * @param itemId the ID of the InventoryItem (represents the specific item instance in the player's inventory)
- * @param pcId the ID of the PlayerCharacter (the player performing the action)
+ * @param playerId the ID of the PlayerCharacter (the player performing the action)
  */
 public class EquipRequest {
     long itemId;
