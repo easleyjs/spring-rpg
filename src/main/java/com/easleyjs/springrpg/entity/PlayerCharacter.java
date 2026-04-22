@@ -26,10 +26,14 @@ public class PlayerCharacter {
     @OneToMany(mappedBy = "player")
     private List<InventoryItem> inventoryItems = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    Location location;
+
     public PlayerCharacter(String name) {
         this.name = name;
         this.xp = 0;
         this.level = 1;
         this.health = 100;
+        this.location = Location.TOWN;
     }
 }

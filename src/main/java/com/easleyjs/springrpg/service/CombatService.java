@@ -42,6 +42,10 @@ public class CombatService {
                         String.format("PlayerCharacter with id %d not found", enc.getPlayerId())
                 ));
 
+        if (pc.getLocation() != Location.FOREST) {
+            throw new RuntimeException("Must be in Forest to fight.");
+        }
+
         InventoryItem invWeapon = invRepo.findByPlayerIdAndEquippedTrueAndItem_ItemType(
                 pc.getId(),
                 ItemType.WEAPON).orElseThrow(

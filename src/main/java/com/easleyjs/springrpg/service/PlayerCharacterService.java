@@ -1,8 +1,12 @@
 package com.easleyjs.springrpg.service;
 
+import com.easleyjs.springrpg.dto.MoveRequest;
+import com.easleyjs.springrpg.dto.PlayerCharacterResponse;
+import com.easleyjs.springrpg.dto.PlayerMoveResponse;
 import com.easleyjs.springrpg.dto.createPlayerRequest;
 import com.easleyjs.springrpg.entity.InventoryItem;
 import com.easleyjs.springrpg.entity.Item;
+import com.easleyjs.springrpg.entity.Location;
 import com.easleyjs.springrpg.entity.PlayerCharacter;
 import com.easleyjs.springrpg.exception.NotFoundException;
 import com.easleyjs.springrpg.repository.InventoryRepo;
@@ -12,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
@@ -34,6 +39,7 @@ public class PlayerCharacterService {
     public PlayerCharacter createCharacter(createPlayerRequest req) {
         PlayerCharacter player = new PlayerCharacter();
         player.setName(req.getName());
+        player.setLocation(Location.TOWN);
         playerRepo.save(player);
 
         // Give player starting gear
@@ -50,7 +56,7 @@ public class PlayerCharacterService {
         return player;
     }
 
-    public Page<PlayerCharacter> getAllCharacters(
+    public Page<PlayerCharacterResponse> getAllCharacters(
             int page,
             int size
     ) {
@@ -58,14 +64,52 @@ public class PlayerCharacterService {
         if (size < 1) size = 1;
 
         int safeSize = Math.min(size, 50);
-        return playerRepo.findAll(PageRequest.of(page, safeSize));
+
+        PageRequest pageable = PageRequest.of(page, safeSize);
+
+        return playerRepo.findAll(pageable)
+                .map(this::toResponse);
     }
 
-    public PlayerCharacter getCharacterById(Long id) {
-        return playerRepo.findById(id)
+    public PlayerCharacterResponse getCharacterById(Long id) {
+        PlayerCharacter pc = playerRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         String.format("Character with id %d not found", id)));
+        return new PlayerCharacterResponse(
+                pc.getId(),
+                pc.getName(),
+                pc.getXp(),
+                pc.getLevel(),
+                pc.getHealth(),
+                pc.getLocation()
+        );
+    }
+
+    public PlayerMoveResponse moveCharacter(MoveRequest req) {
+        PlayerCharacter pc = playerRepo.findById(req.getPcId())
+                .orElseThrow(() -> new NotFoundException(
+                        "Player with id " + req.getPcId() + " not found"));
+
+        pc.setLocation(req.getLocation());
+
+        playerRepo.save(pc);
+
+        return new PlayerMoveResponse(
+                req.getPcId(),
+                req.getLocation()
+        );
+    }
+
+    PlayerCharacterResponse toResponse(PlayerCharacter pc) {
+        return new PlayerCharacterResponse(
+                pc.getId(),
+                pc.getName(),
+                pc.getXp(),
+                pc.getLevel(),
+                pc.getHealth(),
+                pc.getLocation()
+        );
     }
 
 }

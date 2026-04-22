@@ -3,6 +3,7 @@ package com.easleyjs.springrpg.service;
 import com.easleyjs.springrpg.dto.EncounterStartRequest;
 import com.easleyjs.springrpg.entity.Encounter;
 import com.easleyjs.springrpg.entity.EncounterStatus;
+import com.easleyjs.springrpg.entity.Location;
 import com.easleyjs.springrpg.entity.PlayerCharacter;
 import com.easleyjs.springrpg.exception.NotFoundException;
 import com.easleyjs.springrpg.repository.EncounterRepo;
@@ -27,12 +28,17 @@ public class EncounterService {
         PlayerCharacter pc = pcRepo.findById(playerId)
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Character with id %d not found", playerId)));
+
+        if (pc.getLocation() != Location.FOREST) {
+            throw new RuntimeException("Must be in Forest to fight.");
+        }
+
         Encounter encounter = new Encounter(pc.getId());
         encounter.setPlayerHp(100);
         encounter.setMonsterHp(30);
         encounter.setMonsterId(1);
         encounter.setStatus(EncounterStatus.ACTIVE);
-        System.out.println("Encounter" + encounter.getId() + " created");
+
         return encRepo.save(encounter);
     }
 
