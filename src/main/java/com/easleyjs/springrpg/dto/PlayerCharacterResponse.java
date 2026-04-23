@@ -15,4 +15,5 @@ public class PlayerCharacterResponse {
     long level;
     long health;
     Location location;
+    long gold;
 }
