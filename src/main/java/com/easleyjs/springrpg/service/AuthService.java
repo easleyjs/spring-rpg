@@ -1,10 +1,9 @@
 package com.easleyjs.springrpg.service;
 
-import com.easleyjs.springrpg.dto.RegisterRequest;
-import com.easleyjs.springrpg.dto.RegisterResponse;
-import com.easleyjs.springrpg.dto.createPlayerRequest;
+import com.easleyjs.springrpg.dto.*;
 import com.easleyjs.springrpg.entity.PlayerCharacter;
 import com.easleyjs.springrpg.entity.User;
+import com.easleyjs.springrpg.exception.NotFoundException;
 import com.easleyjs.springrpg.repository.UserRepo;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,15 +13,17 @@ public class AuthService {
     private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
     private final PlayerCharacterService pcService;
+    private final JwtService jwtService;
 
     public AuthService(
             UserRepo userRepo,
             PasswordEncoder passwordEncoder,
-            PlayerCharacterService pcService
+            PlayerCharacterService pcService, JwtService jwtService
     ) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.pcService = pcService;
+        this.jwtService = jwtService;
     }
 
     public RegisterResponse register(RegisterRequest req) {
@@ -45,6 +46,21 @@ public class AuthService {
                 user.getUsername(),
                 user.getPassword(),
                 pc.getName()
+        );
+    }
+
+    public LoginResponse login(LoginRequest req) {
+        User user = userRepo.findByUsername(req.getUsername())
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        if  (!passwordEncoder.matches(req.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid username or password");
+        }
+
+        String token = jwtService.generateToken(user);
+
+        return new LoginResponse(
+                token
         );
     }
 }

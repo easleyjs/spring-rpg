@@ -1,9 +1,13 @@
 package com.easleyjs.springrpg.security;
 
+import com.easleyjs.springrpg.entity.User;
+import io.jsonwebtoken.Jwts;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Date;
 
 @Configuration
 public class SecurityConfig {

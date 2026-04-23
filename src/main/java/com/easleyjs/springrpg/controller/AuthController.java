@@ -1,5 +1,7 @@
 package com.easleyjs.springrpg.controller;
 
+import com.easleyjs.springrpg.dto.LoginRequest;
+import com.easleyjs.springrpg.dto.LoginResponse;
 import com.easleyjs.springrpg.dto.RegisterRequest;
 import com.easleyjs.springrpg.dto.RegisterResponse;
 import com.easleyjs.springrpg.service.AuthService;
@@ -21,5 +23,10 @@ public class AuthController {
     @PostMapping("/register")
     public RegisterResponse register(@RequestBody RegisterRequest req) {
         return authService.register(req);
+    }
+
+    @PostMapping("/login")
+    public LoginResponse login(@RequestBody LoginRequest req) {
+        
     }
 }
