@@ -18,35 +18,43 @@ public class DataLoader {
             if (itemRepo.count() == 0) {
                 itemRepo.save(new Item(
                         "Wooden Stick",
+                        "A firm-looking wooden stick",
                         0,
                         1,
                         0,
                         0,
-                        ItemType.WEAPON
+                        ItemType.WEAPON,
+                        false
                 ));
                 itemRepo.save(new Item(
                         "Peasant Outfit",
+                        "The garb of a regular peasant",
                         0,
                         0,
                         0,
                         0,
-                        ItemType.ARMOR
+                        ItemType.ARMOR,
+                        false
                 ));
                 itemRepo.save(new Item(
                         "Wooden Sword",
+                        "Deadlier than a stick",
                         2,
                         1,
                         0,
                         10,
-                        ItemType.WEAPON
+                        ItemType.WEAPON,
+                        false
                 ));
                 itemRepo.save(new Item(
                         "Iron Sword",
+                        "A modest iron sword",
                         5,
                         1,
                         0,
                         25,
-                        ItemType.WEAPON
+                        ItemType.WEAPON,
+                        false
                 ));
             }
         };
