@@ -1,10 +1,10 @@
 package com.easleyjs.springrpg.controller;
 
+import com.easleyjs.springrpg.dto.ShopBuyRequest;
+import com.easleyjs.springrpg.dto.ShopBuyResponse;
 import com.easleyjs.springrpg.dto.ShopItemResponse;
 import com.easleyjs.springrpg.service.ShopService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,5 +20,10 @@ public class ShopController {
     @GetMapping("/items")
     public List<ShopItemResponse> getItems() {
         return shopService.getItems();
+    }
+
+    @PostMapping("/buy")
+    public ShopBuyResponse buyItem(@RequestBody ShopBuyRequest req) {
+        return shopService.buyItem(req);
     }
 }

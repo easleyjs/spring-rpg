@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ShopItemResponse {
+    private long id;
     private String itemName;
     private String itemDescription;
     private ItemType itemType;

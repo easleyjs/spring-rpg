@@ -15,4 +15,9 @@ import lombok.Setter;
 public class EquipRequest {
     long itemId;
     long playerId;
+
+    public EquipRequest(long itemId, Long pcId) {
+        this.itemId = itemId;
+        this.playerId = pcId;
+    }
 }
