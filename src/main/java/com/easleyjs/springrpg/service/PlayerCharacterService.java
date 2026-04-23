@@ -82,7 +82,8 @@ public class PlayerCharacterService {
                 pc.getXp(),
                 pc.getLevel(),
                 pc.getHealth(),
-                pc.getLocation()
+                pc.getLocation(),
+                pc.getGold()
         );
     }
 
@@ -108,7 +109,8 @@ public class PlayerCharacterService {
                 pc.getXp(),
                 pc.getLevel(),
                 pc.getHealth(),
-                pc.getLocation()
+                pc.getLocation(),
+                pc.getGold()
         );
     }
 

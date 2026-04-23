@@ -30,7 +30,6 @@ public class InventoryService {
     }
 
     public List<InventoryItem> getAllByPlayerId(long pcId) {
-        //List<InventoryItem> invItems =
         return invRepo.findAllByPlayerId(pcId);
     }
 
@@ -63,7 +62,8 @@ public class InventoryService {
         return new EquipResponse(
                 invItem.getId(),
                 invItem.getItem().getName(),
-                pc.getId()
+                pc.getId(),
+                1
         );
     }
 
@@ -95,7 +95,8 @@ public class InventoryService {
         return new EquipResponse(
                 item.getId(),
                 item.getItem().getName(),
-                pc.getId()
+                pc.getId(),
+                item.getQuantity()
         );
     }
 }

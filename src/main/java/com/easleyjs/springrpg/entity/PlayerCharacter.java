@@ -22,6 +22,7 @@ public class PlayerCharacter {
     private int xp;
     private int level;
     private int health;
+    private int gold;
 
     @OneToMany(mappedBy = "player")
     private List<InventoryItem> inventoryItems = new ArrayList<>();
@@ -35,5 +36,6 @@ public class PlayerCharacter {
         this.level = 1;
         this.health = 100;
         this.location = Location.TOWN;
+        this.gold = 100;
     }
 }
