@@ -1,0 +1,32 @@
+package com.easleyjs.springrpg.controller;
+
+import com.easleyjs.springrpg.dto.LoginRequest;
+import com.easleyjs.springrpg.dto.LoginResponse;
+import com.easleyjs.springrpg.dto.RegisterRequest;
+import com.easleyjs.springrpg.dto.RegisterResponse;
+import com.easleyjs.springrpg.service.AuthService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/auth")
+public class AuthController {
+
+    private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
+
+    @PostMapping("/register")
+    public RegisterResponse register(@RequestBody RegisterRequest req) {
+        return authService.register(req);
+    }
+
+    @PostMapping("/login")
+    public LoginResponse login(@RequestBody LoginRequest req) {
+        return authService.login(req);
+    }
+}

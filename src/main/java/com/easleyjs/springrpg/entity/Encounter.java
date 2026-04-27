@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-
+// TODO: Create a Monster entity/set up relation
 @Entity
 @NoArgsConstructor
 @Getter
