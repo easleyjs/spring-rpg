@@ -30,4 +30,10 @@ public class JwtService {
                 .getBody()
                 .getSubject();
     }
+
+    public boolean isTokenValid(String token, User user) {
+        String username = extractUsername(token);
+        return username.equals(user.getUsername());
+    }
+
 }
