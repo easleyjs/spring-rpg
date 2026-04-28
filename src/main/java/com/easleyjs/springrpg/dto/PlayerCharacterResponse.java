@@ -9,7 +9,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PlayerCharacterResponse {
-    long id;
     String name;
     long xp;
     long level;
