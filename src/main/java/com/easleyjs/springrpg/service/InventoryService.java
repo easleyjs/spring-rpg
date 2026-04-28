@@ -2,14 +2,12 @@ package com.easleyjs.springrpg.service;
 
 import com.easleyjs.springrpg.dto.EquipRequest;
 import com.easleyjs.springrpg.dto.EquipResponse;
-import com.easleyjs.springrpg.entity.InventoryItem;
-import com.easleyjs.springrpg.entity.Item;
-import com.easleyjs.springrpg.entity.ItemType;
-import com.easleyjs.springrpg.entity.PlayerCharacter;
+import com.easleyjs.springrpg.entity.*;
 import com.easleyjs.springrpg.exception.NotFoundException;
 import com.easleyjs.springrpg.repository.InventoryRepo;
 import com.easleyjs.springrpg.repository.ItemRepo;
 import com.easleyjs.springrpg.repository.PlayerCharacterRepo;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,16 +27,27 @@ public class InventoryService {
         this.playerRepo = playerRepo;
     }
 
-    public List<InventoryItem> getAllByPlayerId(long pcId) {
-        return invRepo.findAllByPlayerId(pcId);
+    public List<InventoryItem> getAllByPlayerId() {
+        User user = (User) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        PlayerCharacter pc = user.getPlayer();
+
+        return invRepo.findAllByPlayerId(pc.getId());
     }
 
     public EquipResponse addInventoryItem(EquipRequest req) {
         Item item = itemRepo.findById(req.getItemId())
                 .orElseThrow(() -> new NotFoundException("Item Not Found"));
 
-        PlayerCharacter pc = playerRepo.findById(req.getPlayerId())
-                .orElseThrow(() -> new NotFoundException("Player not found."));
+        User user = (User) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        PlayerCharacter pc = user.getPlayer();
 
         InventoryItem invItem;
 
@@ -62,7 +71,6 @@ public class InventoryService {
         return new EquipResponse(
                 invItem.getId(),
                 invItem.getItem().getName(),
-                pc.getId(),
                 1
         );
     }
@@ -71,8 +79,12 @@ public class InventoryService {
         InventoryItem item = invRepo.findById(req.getItemId())
                 .orElseThrow(() -> new NotFoundException("Item not in inventory"));
 
-        PlayerCharacter pc = playerRepo.findById(req.getPlayerId())
-                .orElseThrow(() -> new NotFoundException("Player not found"));
+        User user = (User) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        PlayerCharacter pc = user.getPlayer();
 
         if(!(item.getPlayer().getId().equals(pc.getId()))) {
             throw new RuntimeException("Item does not belong to this player");
@@ -95,7 +107,6 @@ public class InventoryService {
         return new EquipResponse(
                 item.getId(),
                 item.getItem().getName(),
-                pc.getId(),
                 item.getQuantity()
         );
     }

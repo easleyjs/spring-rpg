@@ -2,7 +2,6 @@ package com.easleyjs.springrpg.controller;
 
 import com.easleyjs.springrpg.dto.AttackRequest;
 import com.easleyjs.springrpg.dto.CombatResult;
-import com.easleyjs.springrpg.dto.EncounterStartRequest;
 import com.easleyjs.springrpg.dto.EncounterStartResponse;
 import com.easleyjs.springrpg.entity.Encounter;
 import com.easleyjs.springrpg.service.CombatService;
@@ -23,8 +22,8 @@ public class CombatController {
     }
 
     @PostMapping("/create")
-    public EncounterStartResponse create(@RequestBody EncounterStartRequest request) {
-        Encounter enc = encounterService.create(request.getPlayerId());
+    public EncounterStartResponse create() {
+        Encounter enc = encounterService.create();
 
         return new EncounterStartResponse(
                 enc.getId(),

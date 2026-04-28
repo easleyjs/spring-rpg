@@ -7,10 +7,12 @@ import com.easleyjs.springrpg.dto.ShopItemResponse;
 import com.easleyjs.springrpg.entity.Item;
 import com.easleyjs.springrpg.entity.Location;
 import com.easleyjs.springrpg.entity.PlayerCharacter;
+import com.easleyjs.springrpg.entity.User;
 import com.easleyjs.springrpg.exception.InvalidStateException;
 import com.easleyjs.springrpg.exception.NotFoundException;
 import com.easleyjs.springrpg.repository.ItemRepo;
 import com.easleyjs.springrpg.repository.PlayerCharacterRepo;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,8 +33,12 @@ public class ShopService {
     }
 
     public ShopBuyResponse buyItem(ShopBuyRequest req) {
-        PlayerCharacter pc = pcRepo.findById(req.getPlayerId())
-                .orElseThrow(() -> new NotFoundException("Player not found"));
+        User user = (User) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        PlayerCharacter pc = user.getPlayer();
 
         Item item = itemRepo.findById(req.getItemId())
                 .orElseThrow(() -> new NotFoundException("Item not found"));
@@ -48,8 +54,7 @@ public class ShopService {
 
             invService.addInventoryItem(
                     new EquipRequest(
-                            item.getId(),
-                            pc.getId()
+                            item.getId()
                     )
             );
 

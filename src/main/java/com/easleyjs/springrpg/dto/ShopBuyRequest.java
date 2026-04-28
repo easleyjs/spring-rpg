@@ -7,5 +7,4 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ShopBuyRequest {
     private long itemId;
-    private long playerId;
 }

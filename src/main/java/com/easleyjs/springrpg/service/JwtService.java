@@ -21,4 +21,19 @@ public class JwtService {
                 .signWith(secretKey)
                 .compact();
     }
+
+    public String extractUsername(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
+
+    public boolean isTokenValid(String token, User user) {
+        String username = extractUsername(token);
+        return username.equals(user.getUsername());
+    }
+
 }

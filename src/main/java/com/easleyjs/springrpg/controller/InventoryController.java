@@ -21,9 +21,9 @@ public class InventoryController {
         this.invService = invService;
     }
 
-    @GetMapping("/{id}")
-    public List<InventoryItemResponse> getInventory(@PathVariable long id) {
-            return invService.getAllByPlayerId(id)
+    @GetMapping("/me")
+    public List<InventoryItemResponse> getInventory() {
+            return invService.getAllByPlayerId()
                     .stream()
                     .map(InventoryItemResponse::new)
                     .toList();
