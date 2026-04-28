@@ -1,7 +1,6 @@
 package com.easleyjs.springrpg.service;
 
 import com.easleyjs.springrpg.entity.*;
-
 import com.easleyjs.springrpg.exception.NotFoundException;
 import com.easleyjs.springrpg.repository.EncounterRepo;
 import com.easleyjs.springrpg.repository.UserRepo;
@@ -11,7 +10,7 @@ import java.util.List;
 
 @Service
 public class EncounterService {
-    private EncounterRepo encRepo;
+    private final EncounterRepo encRepo;
     private final UserRepo userRepo;
 
     public EncounterService(
@@ -21,7 +20,7 @@ public class EncounterService {
         this.userRepo = userRepo;
     }
 
-    public Encounter create(long playerId) {
+    public Encounter create() {
         User user = (User) SecurityContextHolder
                 .getContext()
                 .getAuthentication()
