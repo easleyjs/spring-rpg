@@ -6,6 +6,7 @@ import com.easleyjs.springrpg.exception.InvalidStateException;
 import com.easleyjs.springrpg.exception.NotFoundException;
 import com.easleyjs.springrpg.repository.EncounterRepo;
 import com.easleyjs.springrpg.repository.InventoryRepo;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.easleyjs.springrpg.repository.PlayerCharacterRepo;
 
@@ -37,10 +38,12 @@ public class CombatService {
             throw new InvalidStateException("Encounter with id " + encounterId + " is not ACTIVE");
         }
 
-        PlayerCharacter pc = pcRepo.findById(enc.getPlayerId())
-                .orElseThrow(() -> new NotFoundException(
-                        String.format("PlayerCharacter with id %d not found", enc.getPlayerId())
-                ));
+        User user = (User) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        PlayerCharacter pc = user.getPlayer();
 
         if (pc.getLocation() != Location.FOREST) {
             throw new RuntimeException("Must be in Forest to fight.");
