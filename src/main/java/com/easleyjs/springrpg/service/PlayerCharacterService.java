@@ -12,6 +12,7 @@ import com.easleyjs.springrpg.repository.PlayerCharacterRepo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -89,16 +90,18 @@ public class PlayerCharacterService {
     }
 
     public PlayerMoveResponse moveCharacter(MoveRequest req) {
-        PlayerCharacter pc = playerRepo.findById(req.getPcId())
-                .orElseThrow(() -> new NotFoundException(
-                        "Player with id " + req.getPcId() + " not found"));
+        User user = (User) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        PlayerCharacter pc = user.getPlayer();
 
         pc.setLocation(req.getLocation());
 
         playerRepo.save(pc);
 
         return new PlayerMoveResponse(
-                req.getPcId(),
                 req.getLocation()
         );
     }

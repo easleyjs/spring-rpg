@@ -9,6 +9,5 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class MoveRequest {
-    private long pcId;
     private Location location;
 }

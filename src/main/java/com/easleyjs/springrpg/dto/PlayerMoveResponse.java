@@ -9,7 +9,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PlayerMoveResponse {
-    long pcId;
     Location location;
-
 }
