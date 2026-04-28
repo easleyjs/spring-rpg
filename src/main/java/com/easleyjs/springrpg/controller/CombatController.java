@@ -5,8 +5,10 @@ import com.easleyjs.springrpg.dto.CombatResult;
 import com.easleyjs.springrpg.dto.EncounterStartRequest;
 import com.easleyjs.springrpg.dto.EncounterStartResponse;
 import com.easleyjs.springrpg.entity.Encounter;
+import com.easleyjs.springrpg.entity.User;
 import com.easleyjs.springrpg.service.CombatService;
 import com.easleyjs.springrpg.service.EncounterService;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,8 +25,13 @@ public class CombatController {
     }
 
     @PostMapping("/create")
-    public EncounterStartResponse create(@RequestBody EncounterStartRequest request) {
-        Encounter enc = encounterService.create(request.getPlayerId());
+    public EncounterStartResponse create() {
+        User user = (User) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        Encounter enc = encounterService.create(user.getId());
 
         return new EncounterStartResponse(
                 enc.getId(),

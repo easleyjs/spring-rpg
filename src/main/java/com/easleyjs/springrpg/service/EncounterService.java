@@ -34,7 +34,7 @@ public class EncounterService {
         }
 
         Encounter encounter = new Encounter(pc.getId());
-        encounter.setPlayerHp(100);
+        encounter.setPlayerHp(user.getPlayer().getHealth());
         encounter.setMonsterHp(30);
         encounter.setMonsterId(1);
         encounter.setStatus(EncounterStatus.ACTIVE);

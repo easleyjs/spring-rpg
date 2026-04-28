@@ -11,14 +11,8 @@ import com.easleyjs.springrpg.repository.ItemRepo;
 import com.easleyjs.springrpg.repository.PlayerCharacterRepo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Optional;
 
 @Service
 public class PlayerCharacterService {
@@ -79,7 +73,6 @@ public class PlayerCharacterService {
         PlayerCharacter pc = user.getPlayer();
 
         return new PlayerCharacterResponse(
-                pc.getId(),
                 pc.getName(),
                 pc.getXp(),
                 pc.getLevel(),
@@ -108,7 +101,6 @@ public class PlayerCharacterService {
 
     PlayerCharacterResponse toResponse(PlayerCharacter pc) {
         return new PlayerCharacterResponse(
-                pc.getId(),
                 pc.getName(),
                 pc.getXp(),
                 pc.getLevel(),
