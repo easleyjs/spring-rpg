@@ -1,33 +1,33 @@
 package com.easleyjs.springrpg.service;
 
-import com.easleyjs.springrpg.dto.EncounterStartRequest;
-import com.easleyjs.springrpg.entity.Encounter;
-import com.easleyjs.springrpg.entity.EncounterStatus;
-import com.easleyjs.springrpg.entity.Location;
-import com.easleyjs.springrpg.entity.PlayerCharacter;
+import com.easleyjs.springrpg.entity.*;
+
 import com.easleyjs.springrpg.exception.NotFoundException;
 import com.easleyjs.springrpg.repository.EncounterRepo;
-import com.easleyjs.springrpg.repository.PlayerCharacterRepo;
+import com.easleyjs.springrpg.repository.UserRepo;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class EncounterService {
     private EncounterRepo encRepo;
-    private PlayerCharacterRepo pcRepo;
+    private final UserRepo userRepo;
 
-    public EncounterService(EncounterRepo encRepo,  PlayerCharacterRepo pcRepo) {
+    public EncounterService(
+            EncounterRepo encRepo,
+            UserRepo userRepo) {
         this.encRepo = encRepo;
-        this.pcRepo = pcRepo;
+        this.userRepo = userRepo;
     }
 
     public Encounter create(long playerId) {
-        PlayerCharacter pc = pcRepo.findById(playerId)
-                .orElseThrow(() -> new NotFoundException(
-                        String.format("Character with id %d not found", playerId)));
+        User user = (User) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        PlayerCharacter pc = user.getPlayer();
 
         if (pc.getLocation() != Location.FOREST) {
             throw new RuntimeException("Must be in Forest to fight.");
