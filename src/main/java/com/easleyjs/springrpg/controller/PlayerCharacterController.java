@@ -20,11 +20,6 @@ public class PlayerCharacterController {
         this.service = service;
     }
 
-    @PostMapping
-    public PlayerCharacter create(@RequestBody createPlayerRequest pc) {
-        return service.createCharacter(pc);
-    }
-
     @GetMapping
     List<PlayerCharacterResponse> getAll(
             @RequestParam(defaultValue = "0") int page,
@@ -33,9 +28,9 @@ public class PlayerCharacterController {
         return service.getAllCharacters(page, size).getContent();
     }
 
-    @GetMapping("/{id}")
-    public PlayerCharacterResponse getById(@PathVariable Long id) {
-        return service.getCharacterById(id);
+    @GetMapping("/me")
+    public PlayerCharacterResponse getById() {
+        return service.getCharacterById();
     }
 
     @PostMapping("/move")

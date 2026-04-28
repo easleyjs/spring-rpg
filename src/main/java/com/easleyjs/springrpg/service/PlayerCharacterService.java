@@ -4,10 +4,7 @@ import com.easleyjs.springrpg.dto.MoveRequest;
 import com.easleyjs.springrpg.dto.PlayerCharacterResponse;
 import com.easleyjs.springrpg.dto.PlayerMoveResponse;
 import com.easleyjs.springrpg.dto.createPlayerRequest;
-import com.easleyjs.springrpg.entity.InventoryItem;
-import com.easleyjs.springrpg.entity.Item;
-import com.easleyjs.springrpg.entity.Location;
-import com.easleyjs.springrpg.entity.PlayerCharacter;
+import com.easleyjs.springrpg.entity.*;
 import com.easleyjs.springrpg.exception.NotFoundException;
 import com.easleyjs.springrpg.repository.InventoryRepo;
 import com.easleyjs.springrpg.repository.ItemRepo;
@@ -15,6 +12,7 @@ import com.easleyjs.springrpg.repository.PlayerCharacterRepo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
@@ -71,11 +69,14 @@ public class PlayerCharacterService {
                 .map(this::toResponse);
     }
 
-    public PlayerCharacterResponse getCharacterById(Long id) {
-        PlayerCharacter pc = playerRepo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        String.format("Character with id %d not found", id)));
+    public PlayerCharacterResponse getCharacterById() {
+        User user = (User) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        PlayerCharacter pc = user.getPlayer();
+
         return new PlayerCharacterResponse(
                 pc.getId(),
                 pc.getName(),
