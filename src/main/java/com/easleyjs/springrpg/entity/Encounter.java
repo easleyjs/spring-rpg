@@ -4,7 +4,10 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-// TODO: Create a Monster entity/set up relation
+
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @NoArgsConstructor
 @Getter
@@ -15,8 +18,10 @@ public class Encounter {
     private long id;
     private long playerId;
     private int playerHp;
-    private long monsterId;
-    private int monsterHp;
+
+    @OneToMany(mappedBy = "encounter", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EncounterMonster> monsters = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     private EncounterStatus status;
 
