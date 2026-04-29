@@ -10,8 +10,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.easleyjs.springrpg.repository.PlayerCharacterRepo;
 
-import java.text.Format;
-
 @Service
 public class CombatService {
     private final PlayerCharacterRepo pcRepo;
@@ -54,21 +52,22 @@ public class CombatService {
                 ItemType.WEAPON).orElseThrow(
                         () -> new NotFoundException("Weapon not found for player"));
         int attackDamage = calculateDamage(pc);
-        int monsterDamage = 10;
 
-        System.out.println("Attack happened in encounter:" + encounterId);
-        System.out.println("Damage: " + attackDamage);
-        System.out.println("Monster Damage: " + monsterDamage);
+        EncounterMonster em = enc.getMonsters().get(0);
+
+        String monsterName = em.getName();
+        int monsterDamage = em.getDamage();
+        int monsterHp = em.getCurrentHealth();
 
         applyPlayerAttack(enc, attackDamage);
 
-        if (enc.getMonsterHp() == 0) {
+        if (monsterHp == 0) {
             enc.setStatus(EncounterStatus.WON);
             encRepo.save(enc);
-            System.out.println("Encounter" + encounterId + " won");
+
             message = String.format(
                     "You attack %s for %d damage.\n%s is dead.\nYou gained +10 XP",
-                    "Monster Name", attackDamage, "Monster Name");
+                    monsterName, attackDamage, monsterName);
 
             pc.setXp(pc.getXp() + 10);
             if (pc.getXp() >= 100) {
@@ -79,14 +78,14 @@ public class CombatService {
 
             return new CombatResult(
                     enc.getPlayerHp(),
-                    enc.getMonsterHp(),
+                    monsterHp,
                     attackDamage,
                     message,
                     enc.getStatus());
         } else {
             message = String.format(
                     "You attack %s with %s for %d damage.",
-                    "Monster Name", invWeapon.getItem().getName(), attackDamage);
+                    monsterName, invWeapon.getItem().getName(), attackDamage);
 
             applyMonsterAttack(enc, monsterDamage);
 
@@ -95,17 +94,17 @@ public class CombatService {
                 System.out.println("Encounter" + encounterId+ " lost");
                 message += String.format(
                         "\n%s attacks you for %d damage.\nYou are dead.",
-                        "Monster Name", monsterDamage);
+                        monsterName, monsterDamage);
             } else {
                 message += String.format(
                         "\n%s attacks you for %d damage.",
-                        enc.getMonsterId(), monsterDamage);
+                        monsterName, monsterDamage);
             }
         }
         encRepo.save(enc);
         return new CombatResult(
                 enc.getPlayerHp(),
-                enc.getMonsterHp(),
+                monsterHp,
                 attackDamage,
                 message,
                 enc.getStatus());
@@ -127,7 +126,8 @@ public class CombatService {
     }
 
     private void applyPlayerAttack(Encounter enc, int damage) {
-        enc.setMonsterHp(Math.max(0,enc.getMonsterHp() - damage));
+        EncounterMonster em = enc.getMonsters().get(0);
+        em.setCurrentHealth(Math.max(0, em.getCurrentHealth() - damage));
     }
 
     private void applyMonsterAttack(Encounter enc, int damage) {
