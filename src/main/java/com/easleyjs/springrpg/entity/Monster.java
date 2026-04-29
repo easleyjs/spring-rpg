@@ -24,4 +24,22 @@ public class Monster {
     private int baseDamage;
     private int xp;
     private int gold;
+
+    public Monster(
+            String name,
+            int baseHealth,
+            int minLevel,
+            int maxLevel,
+            int baseDamage,
+            int xp,
+            int gold
+    ) {
+        this.name = name;
+        this.baseHealth = baseHealth;
+        this.minLevel = minLevel;
+        this.maxLevel = maxLevel;
+        this.baseDamage = baseDamage;
+        this.xp = xp;
+        this.gold = gold;
+    }
 }
