@@ -28,7 +28,8 @@ public class CombatController {
         return new EncounterStartResponse(
                 enc.getId(),
                 enc.getPlayerHp(),
-                enc.getMonsterHp(),
+                enc.getMonsters().get(0).getName(),
+                enc.getMonsters().get(0).getCurrentHealth(),
                 enc.getStatus()
         );
     }
@@ -37,12 +38,13 @@ public class CombatController {
     public CombatResult attack(@RequestBody AttackRequest request) {
         return combatService.attack(request.getEncounterId());
     }
-
+    //TODO: Review this one for security
     @GetMapping("/{id}")
     public Encounter getEncounter(@PathVariable long id) {
         return encounterService.getEncounter(id);
     }
 
+    //TODO: Review this one for security/admin-only
     @GetMapping()
     public List<Encounter> getAllEncounters() {
         return encounterService.getAllEncounters();
