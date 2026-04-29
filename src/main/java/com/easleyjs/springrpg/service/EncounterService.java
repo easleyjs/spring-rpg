@@ -3,21 +3,25 @@ package com.easleyjs.springrpg.service;
 import com.easleyjs.springrpg.entity.*;
 import com.easleyjs.springrpg.exception.NotFoundException;
 import com.easleyjs.springrpg.repository.EncounterRepo;
+import com.easleyjs.springrpg.repository.MonsterRepo;
 import com.easleyjs.springrpg.repository.UserRepo;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class EncounterService {
     private final EncounterRepo encRepo;
     private final UserRepo userRepo;
+    private final MonsterRepo monsterRepo;
 
     public EncounterService(
             EncounterRepo encRepo,
-            UserRepo userRepo) {
+            UserRepo userRepo, MonsterRepo monsterRepo) {
         this.encRepo = encRepo;
         this.userRepo = userRepo;
+        this.monsterRepo = monsterRepo;
     }
 
     public Encounter create() {
@@ -32,10 +36,27 @@ public class EncounterService {
             throw new RuntimeException("Must be in Forest to fight.");
         }
 
+        List<Monster> pool = monsterRepo.findByMinLevelLessThanEqualAndMaxLevelGreaterThanEqual(
+                pc.getLevel(),
+                pc.getLevel()
+        );
+
+        Monster monster = pool.get(
+                new Random().nextInt(pool.size())
+        );
+
+
         Encounter encounter = new Encounter(pc.getId());
         encounter.setPlayerHp(user.getPlayer().getHealth());
-        encounter.setMonsterHp(30);
-        encounter.setMonsterId(1);
+
+        EncounterMonster em = new EncounterMonster();
+        em.setName(monster.getName());
+        em.setCurrentHealth(monster.getBaseHealth());
+        em.setDamage(monster.getBaseDamage());
+        em.setXp(monster.getXp());
+        em.setEncounter(encounter);
+
+        encounter.getMonsters().add(em);
         encounter.setStatus(EncounterStatus.ACTIVE);
 
         return encRepo.save(encounter);
