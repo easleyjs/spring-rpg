@@ -1,11 +1,14 @@
 let username = "";
 let password = "";
 let character = {};
+let isNewUser = false;
+let newCharacterName = "";
 
 const term = new Terminal();
 term.open(document.getElementById('terminal'));
 
 term.writeln("Welcome to SpringRPG");
+term.writeln(`Please log in or enter "new" to create a new account.`);
 // TODO: "new" or "login"
 term.write("Username: ");
 //handleCommand("inputUsername");
@@ -13,15 +16,38 @@ term.write("Username: ");
 let input = "";
 
 term.onData(e => {
+    if (e === '\x7F') { // backspace
+        if (input.length > 0) {
+            input = input.slice(0, -1);
+            term.write('\b \b'); // erase character visually
+        }
+    }
     if (e === '\r') {
-        if (!username) {
+        if (!username && !isNewUser && input !== "new") {
             handleCommand("inputUsername");
-        } else if (!password) {
+
+        } else if (!password && !isNewUser && input !== "new") {
             handleCommand("inputPassword");
             term.write("\r\n");
+
+        } else if (input === "new" && !username && !password) {
+            isNewUser = true;
+            term.write("\r\n");
+            handleCommand("newUsernamePrompt");
+
+        } else if (isNewUser && !username) {
+            handleCommand("setNewUsername");
+
+        } else if (isNewUser && !password) {
+            handleCommand("setNewUserPassword");
+
+        } else if (isNewUser && username && password) {
+            handleCommand("setNewCharacterName");
+
         } else {
             handleCommand(input);
             term.write("\r\n");
+
         }
         input = "";
     } else {
@@ -38,6 +64,7 @@ async function handleCommand(cmd) {
     if (cmd === "inputUsername") {
         username = input;
         term.write("\r\n");
+        console.log("Existing user: " + username);
 
         term.write("Password: ");
     }
@@ -50,13 +77,6 @@ async function handleCommand(cmd) {
 
         term.clear();
 
-        const buffer = term.buffer.active;
-        const bottom = buffer.length - term.rows;
-
-        console.log("rows: " + term.rows);
-        console.log("buffer: " + buffer);
-        console.log(bottom - buffer.viewportY);
-
         for (let i = 0; i < (term.rows - 1); i++) {
             term.write('\r\n');
         }
@@ -64,17 +84,37 @@ async function handleCommand(cmd) {
         //TODO: menu w/ location, gold, level, xp
     }
 
-    if (cmd === "new") {
-        const res = await fetch("/characters", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name: "Shadowbear" })
-        });
+    if (cmd === "newUsernamePrompt") {
+        console.log("New user creation");
 
-        const data = await res.json();
-        window.currentEncounterId = data.encounterId;
+        term.clear();
+        term.write("Username (used for login only): ");
+    }
+    if (cmd === "setNewUsername") {
+        username = input;
 
-        term.writeln(`User Shadowbear created`);
+        console.log("New username: " + username);
+
+        term.write("\r\n");
+        term.write("Password: ");
+    }
+
+    if (cmd === "setNewUserPassword") {
+        password = input;
+        console.log("New Password: " + password);
+
+        term.write("\r\n");
+        term.write("Character Name: ");
+    }
+
+    if (cmd === "setNewCharacterName") {
+        newCharacterName = input;
+        console.log("Character Name set to: " + newCharacterName);
+
+        const res = await createCharacter(input);
+        login(username, password);
+
+        term.write("\r\n");
     }
 
     if (cmd === "start") {
@@ -112,7 +152,6 @@ async function login(username, password) {
     });
 
     const data = await res.json();
-    console.log(data.token);
 
     localStorage.setItem("rpg-token", data.token);
 }
@@ -124,6 +163,19 @@ function authHeaders() {
         "Content-Type": "application/json",
         "Authorization": "Bearer " + token
     };
+}
+
+async function createCharacter( characterName ) {
+    const res = await fetch("/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }, // use token helper
+        body: JSON.stringify({
+            username: username,
+            password: password,
+            characterName: characterName
+        })
+    });
+    return res.json();
 }
 
 async function getCharacter() {
