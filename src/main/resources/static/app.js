@@ -1,23 +1,69 @@
+let username = "";
+let password = "";
+let character = {};
+
 const term = new Terminal();
 term.open(document.getElementById('terminal'));
 
 term.writeln("Welcome to SpringRPG");
-term.write("> ");
+// TODO: "new" or "login"
+term.write("Username: ");
+//handleCommand("inputUsername");
 
 let input = "";
 
 term.onData(e => {
     if (e === '\r') {
-        handleCommand(input);
+        if (!username) {
+            handleCommand("inputUsername");
+        } else if (!password) {
+            handleCommand("inputPassword");
+            term.write("\r\n");
+        } else {
+            handleCommand(input);
+            term.write("\r\n");
+        }
         input = "";
-        term.write("\r\n> ");
     } else {
         input += e;
-        term.write(e);
+        if (username && !password) {
+            term.write("*");
+        } else {
+            term.write(e);
+        }
     }
 });
 
 async function handleCommand(cmd) {
+    if (cmd === "inputUsername") {
+        username = input;
+        term.write("\r\n");
+
+        term.write("Password: ");
+    }
+
+    if (cmd === "inputPassword") {
+        password = input;
+        await login(username, password);
+        character = await getCharacter();
+        console.log(character);
+
+        term.clear();
+
+        const buffer = term.buffer.active;
+        const bottom = buffer.length - term.rows;
+
+        console.log("rows: " + term.rows);
+        console.log("buffer: " + buffer);
+        console.log(bottom - buffer.viewportY);
+
+        for (let i = 0; i < (term.rows - 1); i++) {
+            term.write('\r\n');
+        }
+        term.writeln("Welcome, " + character.name + ".");
+        //TODO: menu w/ location, gold, level, xp
+    }
+
     if (cmd === "new") {
         const res = await fetch("/characters", {
             method: "POST",
@@ -58,4 +104,32 @@ async function handleCommand(cmd) {
     }
 }
 
+async function login(username, password) {
+    const res = await fetch("/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+    });
 
+    const data = await res.json();
+    console.log(data.token);
+
+    localStorage.setItem("rpg-token", data.token);
+}
+
+function authHeaders() {
+    const token = localStorage.getItem("rpg-token");
+
+    return {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+    };
+}
+
+async function getCharacter() {
+    const res = await fetch("/characters/me", {
+        headers: authHeaders()
+    });
+
+    return res.json();
+}
