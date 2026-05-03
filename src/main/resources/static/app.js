@@ -93,9 +93,6 @@ async function handleCommand(cmd) {
 
         term.clear();
 
-        for (let i = 0; i < (term.rows - 1); i++) {
-            term.write('\r\n');
-        }
         term.writeln("Welcome, " + character.name + ".");
         term.writeln("You are in town.");
         term.writeln(commandList(townCommands));
@@ -212,6 +209,12 @@ function authHeaders() {
 // TODO: shop function (get list of items)
 // TODO: buy function
 // TODO: turns? add to input menu
+
+function printLog() {
+    for (let i = 0; i < (term.rows - 1); i++) {
+        term.write('\r\n');
+    }
+}
 
 function color(text, code) {
     return `\x1b[${code}m${text}\x1b[0m`;
