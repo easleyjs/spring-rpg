@@ -4,14 +4,30 @@ let character = {};
 let isNewUser = false;
 let newCharacterName = "";
 
+const townCommands = {
+    "F": "Enter Forest",
+    "S": "Enter Shop",
+    "I": "View Inventory",
+}
+
+const forestCommands = {
+    "A": "Attack",
+    "U": "Use Item",
+    "R": "Return to Town"
+}
+
+const shopCommands = {
+    "B": "Buy Item",
+    "R": "Return to Town"
+}
+
 const term = new Terminal();
 term.open(document.getElementById('terminal'));
 
 term.writeln("Welcome to SpringRPG");
 term.writeln(`Please log in or enter "new" to create a new account.`);
-// TODO: "new" or "login"
+
 term.write("Username: ");
-//handleCommand("inputUsername");
 
 let input = "";
 
@@ -111,7 +127,6 @@ async function handleCommand(cmd) {
 
     if (cmd === "setNewCharacterName") {
         newCharacterName = input;
-        console.log("Character Name set to: " + newCharacterName);
 
         const res = await createCharacter(input);
         login(username, password);
@@ -189,21 +204,24 @@ function authHeaders() {
     };
 }
 
+
+// TODO: writeScreen/do the log of commands/messages. Clear screen, write those, then write menu
+// TODO: getInventory function
+// TODO: startCombat function
+// TODO: attack function
+// TODO: shop function (get list of items)
+// TODO: buy function
+// TODO: turns? add to input menu
+
 function color(text, code) {
     return `\x1b[${code}m${text}\x1b[0m`;
-}
-
-const townCommands = {
-    "F": "Enter Forest",
-    "S": "Enter Shop",
-    "I": "View Inventory",
 }
 
 function commandList(commands) {
     let commandString = "";
 
     for (const [key, value] of Object.entries(commands)) {
-        commandString += `(${key}) ${value} `;
+        commandString += `(` + color(key,"1;32") + `) ${value} `;
     }
 
     return commandString;
@@ -211,8 +229,8 @@ function commandList(commands) {
 
 function inputMenu() {
     return "[" + character.name + "]"
-        + " (HP: \x1b[32m" + character.health + "\x1b[0m"
-        + " Level: \x1b[33m" + character.level + "\x1b[0m"
-        + " Gold: \x1b[33m" + character.gold + "\x1b[0m"
-        + "): ";
+        + ` (HP: ` + color(character.health, 32) + `)`
+        + ` Level: ` + color(character.level, 33) + ` `
+        + ` Gold: ` + color(character.gold, 33) + ` `
+        + `): `;
 }
