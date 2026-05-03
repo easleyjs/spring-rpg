@@ -81,7 +81,9 @@ async function handleCommand(cmd) {
             term.write('\r\n');
         }
         term.writeln("Welcome, " + character.name + ".");
-        //TODO: menu w/ location, gold, level, xp
+        term.writeln("You are in town.");
+        term.writeln(commandList(townCommands));
+        term.write(inputMenu());
     }
 
     if (cmd === "newUsernamePrompt") {
@@ -115,6 +117,7 @@ async function handleCommand(cmd) {
         login(username, password);
 
         term.write("\r\n");
+        term.write(inputMenu());
     }
 
     if (cmd === "start") {
@@ -156,15 +159,6 @@ async function login(username, password) {
     localStorage.setItem("rpg-token", data.token);
 }
 
-function authHeaders() {
-    const token = localStorage.getItem("rpg-token");
-
-    return {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + token
-    };
-}
-
 async function createCharacter( characterName ) {
     const res = await fetch("/auth/register", {
         method: "POST",
@@ -184,4 +178,41 @@ async function getCharacter() {
     });
 
     return res.json();
+}
+
+function authHeaders() {
+    const token = localStorage.getItem("rpg-token");
+
+    return {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+    };
+}
+
+function color(text, code) {
+    return `\x1b[${code}m${text}\x1b[0m`;
+}
+
+const townCommands = {
+    "F": "Enter Forest",
+    "S": "Enter Shop",
+    "I": "View Inventory",
+}
+
+function commandList(commands) {
+    let commandString = "";
+
+    for (const [key, value] of Object.entries(commands)) {
+        commandString += `(${key}) ${value} `;
+    }
+
+    return commandString;
+}
+
+function inputMenu() {
+    return "[" + character.name + "]"
+        + " (HP: \x1b[32m" + character.health + "\x1b[0m"
+        + " Level: \x1b[33m" + character.level + "\x1b[0m"
+        + " Gold: \x1b[33m" + character.gold + "\x1b[0m"
+        + "): ";
 }
