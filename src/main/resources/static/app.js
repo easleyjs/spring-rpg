@@ -203,6 +203,7 @@ function authHeaders() {
 
 
 // TODO: writeScreen/do the log of commands/messages. Clear screen, write those, then write menu
+
 // TODO: getInventory function
 // TODO: startCombat function
 // TODO: attack function
