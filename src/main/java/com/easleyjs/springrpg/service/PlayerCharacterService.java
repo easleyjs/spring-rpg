@@ -30,9 +30,8 @@ public class PlayerCharacterService {
     }
 
     public PlayerCharacter createCharacter(createPlayerRequest req) {
-        PlayerCharacter player = new PlayerCharacter();
-        player.setName(req.getName());
-        player.setLocation(Location.TOWN);
+        PlayerCharacter player = new PlayerCharacter(req.getName());
+
         playerRepo.save(player);
 
         // Give player starting gear

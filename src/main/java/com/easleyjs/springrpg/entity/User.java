@@ -18,13 +18,19 @@ public class User {
     @OneToOne(cascade = CascadeType.ALL)
     private PlayerCharacter player;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.USER;
+
     public User(
             String username,
             String password,
-            PlayerCharacter player
+            PlayerCharacter player,
+            Role role
     ) {
         this.username = username;
         this.password = password;
         this.player = player;
+        this.role = role;
     }
 }

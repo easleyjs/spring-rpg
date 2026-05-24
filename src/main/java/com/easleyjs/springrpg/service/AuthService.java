@@ -2,6 +2,7 @@ package com.easleyjs.springrpg.service;
 
 import com.easleyjs.springrpg.dto.*;
 import com.easleyjs.springrpg.entity.PlayerCharacter;
+import com.easleyjs.springrpg.entity.Role;
 import com.easleyjs.springrpg.entity.User;
 import com.easleyjs.springrpg.exception.NotFoundException;
 import com.easleyjs.springrpg.repository.UserRepo;
@@ -39,6 +40,7 @@ public class AuthService {
                 )
         );
         user.setPlayer(pc);
+        user.setRole(Role.USER);
 
         userRepo.save(user);
 
