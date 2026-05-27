@@ -1,5 +1,6 @@
 package com.easleyjs.springrpg.entity;
 
+import com.easleyjs.springrpg.dto.CreateItemRequest;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,5 +43,8 @@ public class Item {
         this.price = price;
         this.itemType = itemType;
         this.shopItem = shopItem;
+    }
+
+    public Item(CreateItemRequest createItemRequest) {
     }
 }
