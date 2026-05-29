@@ -3,6 +3,8 @@ package com.easleyjs.springrpg.security;
 import com.easleyjs.springrpg.entity.User;
 import com.easleyjs.springrpg.service.JwtService;
 import java.io.IOException;
+
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +29,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private UserRepo userRepo;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getServletPath().startsWith("/auth/");
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain)
@@ -40,21 +47,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7);
-        String username = jwtService.extractUsername(token);
 
-        User user = userRepo.findByUsername(username).orElse(null);
+        try {
+            String username = jwtService.extractUsername(token);
+            User user = userRepo.findByUsername(username).orElse(null);
 
-        if (user != null) {
-            UsernamePasswordAuthenticationToken auth =
-                    new UsernamePasswordAuthenticationToken(
-                            user,
-                            null,
-                            List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
-                    );
+            if (user != null) {
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(
+                                user,
+                                null,
+                                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
+                        );
 
-            SecurityContextHolder.getContext().setAuthentication(auth);
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            }
+            System.out.println("User authenticated: " + username);
+            filterChain.doFilter(request, response);
+
+        } catch (JwtException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
-        System.out.println("User authenticated: " + username);
-        filterChain.doFilter(request, response);
     }
 }
