@@ -1,32 +1,25 @@
-package com.easleyjs.springrpg.entity;
+package com.easleyjs.springrpg.dto;
 
-import com.easleyjs.springrpg.dto.CreateItemRequest;
-import jakarta.persistence.*;
+import com.easleyjs.springrpg.entity.Item;
+import com.easleyjs.springrpg.entity.ItemType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
-
-@Entity
-public class Item {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+public class ItemDetailResponse {
     private String name;
     private String description;
     private int damageBonus;
     private int damageMultiplier;
     private int defenseBonus;
     private int price;
+    private ItemType itemType;
     private boolean shopItem;
 
-    @Enumerated(EnumType.STRING)
-    ItemType itemType;
-
-    public Item(
+    public ItemDetailResponse(
             String name,
             String description,
             int damageBonus,
@@ -37,14 +30,11 @@ public class Item {
             boolean shopItem) {
         this.name = name;
         this.description = description;
-        this.damageBonus = damageBonus;
+        this.damageBonus =  damageBonus;
         this.damageMultiplier = damageMultiplier;
         this.defenseBonus = defenseBonus;
         this.price = price;
         this.itemType = itemType;
         this.shopItem = shopItem;
-    }
-
-    public Item(CreateItemRequest createItemRequest) {
     }
 }

@@ -8,6 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 
-public class createPlayerRequest {
+public class CreatePlayerRequest {
     String name;
 }

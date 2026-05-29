@@ -35,7 +35,7 @@ public class AuthService {
         user.setPassword(hashed);
 
         PlayerCharacter pc = pcService.createCharacter(
-                new createPlayerRequest(
+                new CreatePlayerRequest(
                     req.getCharacterName()
                 )
         );

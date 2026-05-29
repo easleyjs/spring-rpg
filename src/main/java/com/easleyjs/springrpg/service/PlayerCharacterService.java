@@ -3,7 +3,7 @@ package com.easleyjs.springrpg.service;
 import com.easleyjs.springrpg.dto.MoveRequest;
 import com.easleyjs.springrpg.dto.PlayerCharacterResponse;
 import com.easleyjs.springrpg.dto.PlayerMoveResponse;
-import com.easleyjs.springrpg.dto.createPlayerRequest;
+import com.easleyjs.springrpg.dto.CreatePlayerRequest;
 import com.easleyjs.springrpg.entity.*;
 import com.easleyjs.springrpg.exception.NotFoundException;
 import com.easleyjs.springrpg.repository.InventoryRepo;
@@ -29,7 +29,7 @@ public class PlayerCharacterService {
         this.inventoryRepo = inventoryRepo;
     }
 
-    public PlayerCharacter createCharacter(createPlayerRequest req) {
+    public PlayerCharacter createCharacter(CreatePlayerRequest req) {
         PlayerCharacter player = new PlayerCharacter(req.getName());
 
         playerRepo.save(player);
