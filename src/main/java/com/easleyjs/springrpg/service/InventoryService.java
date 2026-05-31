@@ -3,7 +3,8 @@ package com.easleyjs.springrpg.service;
 import com.easleyjs.springrpg.dto.EquipRequest;
 import com.easleyjs.springrpg.dto.EquipResponse;
 import com.easleyjs.springrpg.entity.*;
-import com.easleyjs.springrpg.exception.NotFoundException;
+import com.easleyjs.springrpg.exception.InvalidGameActionException;
+import com.easleyjs.springrpg.exception.ResourceNotFoundException;
 import com.easleyjs.springrpg.repository.InventoryRepo;
 import com.easleyjs.springrpg.repository.ItemRepo;
 import com.easleyjs.springrpg.repository.PlayerCharacterRepo;
@@ -40,7 +41,7 @@ public class InventoryService {
 
     public EquipResponse addInventoryItem(EquipRequest req) {
         Item item = itemRepo.findById(req.getItemId())
-                .orElseThrow(() -> new NotFoundException("Item Not Found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Item Not Found"));
 
         User user = (User) SecurityContextHolder
                 .getContext()
@@ -77,7 +78,7 @@ public class InventoryService {
 
     public EquipResponse equipInventoryItem(EquipRequest req) {
         InventoryItem item = invRepo.findById(req.getItemId())
-                .orElseThrow(() -> new NotFoundException("Item not in inventory"));
+                .orElseThrow(() -> new ResourceNotFoundException("Item not in inventory"));
 
         User user = (User) SecurityContextHolder
                 .getContext()
@@ -87,11 +88,11 @@ public class InventoryService {
         PlayerCharacter pc = user.getPlayer();
 
         if(!(item.getPlayer().getId().equals(pc.getId()))) {
-            throw new RuntimeException("Item does not belong to this player");
+            throw new InvalidGameActionException("Item does not belong to this player");
         }
 
         if (!(item.getItem().getItemType() == ItemType.WEAPON)) {
-            throw new RuntimeException("Cannot equip non-weapons");
+            throw new InvalidGameActionException("Cannot equip non-weapons");
         }
 
         List<InventoryItem> items = invRepo.findAllByPlayerId(pc.getId());
