@@ -5,7 +5,7 @@ import com.easleyjs.springrpg.dto.PlayerCharacterResponse;
 import com.easleyjs.springrpg.dto.PlayerMoveResponse;
 import com.easleyjs.springrpg.dto.CreatePlayerRequest;
 import com.easleyjs.springrpg.entity.*;
-import com.easleyjs.springrpg.exception.NotFoundException;
+import com.easleyjs.springrpg.exception.ResourceNotFoundException;
 import com.easleyjs.springrpg.repository.InventoryRepo;
 import com.easleyjs.springrpg.repository.ItemRepo;
 import com.easleyjs.springrpg.repository.PlayerCharacterRepo;
@@ -36,7 +36,7 @@ public class PlayerCharacterService {
 
         // Give player starting gear
         Item starterSword = itemRepo.findByName("Wooden Stick")
-                .orElseThrow(() -> new NotFoundException("Item not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found."));
         InventoryItem invItem = new InventoryItem();
         invItem.setPlayer(player);
         invItem.setItem(starterSword);

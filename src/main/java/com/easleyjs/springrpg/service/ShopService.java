@@ -8,8 +8,8 @@ import com.easleyjs.springrpg.entity.Item;
 import com.easleyjs.springrpg.entity.Location;
 import com.easleyjs.springrpg.entity.PlayerCharacter;
 import com.easleyjs.springrpg.entity.User;
-import com.easleyjs.springrpg.exception.InvalidStateException;
-import com.easleyjs.springrpg.exception.NotFoundException;
+import com.easleyjs.springrpg.exception.InvalidGameActionException;
+import com.easleyjs.springrpg.exception.ResourceNotFoundException;
 import com.easleyjs.springrpg.repository.ItemRepo;
 import com.easleyjs.springrpg.repository.PlayerCharacterRepo;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,10 +41,10 @@ public class ShopService {
         PlayerCharacter pc = user.getPlayer();
 
         Item item = itemRepo.findById(req.getItemId())
-                .orElseThrow(() -> new NotFoundException("Item not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
 
         if (pc.getLocation() != Location.SHOP) {
-            throw new InvalidStateException("You must be in the shop to buy items.");
+            throw new InvalidGameActionException("You must be in the shop to buy items.");
         }
 
         if (pc.getGold() < item.getPrice()) {
@@ -64,7 +64,7 @@ public class ShopService {
                 remaining
             );
         } else {
-            throw new InvalidStateException("Not enough gold");
+            throw new InvalidGameActionException("Not enough gold");
         }
 
     }

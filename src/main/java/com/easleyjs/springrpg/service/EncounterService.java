@@ -1,7 +1,9 @@
 package com.easleyjs.springrpg.service;
 
 import com.easleyjs.springrpg.entity.*;
+import com.easleyjs.springrpg.exception.InvalidGameActionException;
 import com.easleyjs.springrpg.exception.NotFoundException;
+import com.easleyjs.springrpg.exception.ResourceNotFoundException;
 import com.easleyjs.springrpg.repository.EncounterRepo;
 import com.easleyjs.springrpg.repository.MonsterRepo;
 import com.easleyjs.springrpg.repository.UserRepo;
@@ -33,7 +35,7 @@ public class EncounterService {
         PlayerCharacter pc = user.getPlayer();
 
         if (pc.getLocation() != Location.FOREST) {
-            throw new RuntimeException("Must be in Forest to fight.");
+            throw new InvalidGameActionException("Must be in Forest to fight.");
         }
 
         List<Monster> pool = monsterRepo.findByMinLevelLessThanEqualAndMaxLevelGreaterThanEqual(
@@ -64,7 +66,7 @@ public class EncounterService {
 
     public Encounter getEncounter(long id) {
         Encounter encounter = encRepo.findById(id)
-                .orElseThrow(() -> new NotFoundException(
+                .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("Encounter with id " + id + " not found", id)));
         return encounter;
     }

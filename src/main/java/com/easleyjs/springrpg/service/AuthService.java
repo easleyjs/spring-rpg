@@ -4,7 +4,7 @@ import com.easleyjs.springrpg.dto.*;
 import com.easleyjs.springrpg.entity.PlayerCharacter;
 import com.easleyjs.springrpg.entity.Role;
 import com.easleyjs.springrpg.entity.User;
-import com.easleyjs.springrpg.exception.NotFoundException;
+import com.easleyjs.springrpg.exception.ResourceNotFoundException;
 import com.easleyjs.springrpg.repository.UserRepo;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -53,7 +53,7 @@ public class AuthService {
 
     public LoginResponse login(LoginRequest req) {
         User user = userRepo.findByUsername(req.getUsername())
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if  (!passwordEncoder.matches(req.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid username or password");
