@@ -5,6 +5,7 @@ import com.easleyjs.springrpg.dto.CreateItemResponse;
 import com.easleyjs.springrpg.dto.ItemDetailResponse;
 import com.easleyjs.springrpg.repository.ItemRepo;
 import com.easleyjs.springrpg.service.ItemService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,8 @@ public class AdminController {
     }
 
     @PostMapping("/items")
-    public CreateItemResponse addItem(@RequestBody CreateItemRequest item) {
+    public CreateItemResponse addItem(
+            @Valid @RequestBody CreateItemRequest item) {
         return itemService.createItem(item);
     }
 
