@@ -2,8 +2,8 @@ package com.easleyjs.springrpg.service;
 
 import com.easleyjs.springrpg.dto.CombatResult;
 import com.easleyjs.springrpg.entity.*;
-import com.easleyjs.springrpg.exception.InvalidStateException;
-import com.easleyjs.springrpg.exception.NotFoundException;
+import com.easleyjs.springrpg.exception.InvalidGameActionException;
+import com.easleyjs.springrpg.exception.ResourceNotFoundException;
 import com.easleyjs.springrpg.repository.EncounterRepo;
 import com.easleyjs.springrpg.repository.InventoryRepo;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,11 +29,11 @@ public class CombatService {
         String message;
         Encounter enc = encRepo.findById(encounterId)
                 .orElseThrow(
-                        () -> new NotFoundException(
+                        () -> new ResourceNotFoundException(
                                 String.format("Encounter with id %d not found", encounterId)));
 
         if (enc.getStatus() != EncounterStatus.ACTIVE) {
-            throw new InvalidStateException("Encounter with id " + encounterId + " is not ACTIVE");
+            throw new InvalidGameActionException("Encounter with id " + encounterId + " is not ACTIVE");
         }
 
         User user = (User) SecurityContextHolder
@@ -44,13 +44,13 @@ public class CombatService {
         PlayerCharacter pc = user.getPlayer();
 
         if (pc.getLocation() != Location.FOREST) {
-            throw new RuntimeException("Must be in Forest to fight.");
+            throw new InvalidGameActionException("Must be in Forest to fight.");
         }
 
         InventoryItem invWeapon = invRepo.findByPlayerIdAndEquippedTrueAndItem_ItemType(
                 pc.getId(),
                 ItemType.WEAPON).orElseThrow(
-                        () -> new NotFoundException("Weapon not found for player"));
+                        () -> new ResourceNotFoundException("Weapon not found for player"));
         int attackDamage = calculateDamage(pc);
 
         EncounterMonster em = enc.getMonsters().get(0);
@@ -116,7 +116,7 @@ public class CombatService {
         InventoryItem invWeapon = invRepo.findByPlayerIdAndEquippedTrueAndItem_ItemType(
                 pc.getId(),
                 ItemType.WEAPON).orElseThrow(
-                        () -> new NotFoundException("Weapon not found for player."));
+                        () -> new ResourceNotFoundException("Weapon not found for player."));
 
         int weaponFlatBonus = invWeapon.getItem().getDamageBonus();
         int weaponDmgMultiplier = invWeapon.getItem().getDamageMultiplier();
