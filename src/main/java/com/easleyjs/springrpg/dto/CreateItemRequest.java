@@ -19,5 +19,5 @@ public class CreateItemRequest {
     @Min(0) int defenseBonus;
     @Min(0) int price;
     @NotNull ItemType itemType;
-    @NotBlank boolean shopItem;
+    boolean shopItem;
 }
