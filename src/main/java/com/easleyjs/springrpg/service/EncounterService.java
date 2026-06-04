@@ -2,7 +2,6 @@ package com.easleyjs.springrpg.service;
 
 import com.easleyjs.springrpg.entity.*;
 import com.easleyjs.springrpg.exception.InvalidGameActionException;
-import com.easleyjs.springrpg.exception.NotFoundException;
 import com.easleyjs.springrpg.exception.ResourceNotFoundException;
 import com.easleyjs.springrpg.repository.EncounterRepo;
 import com.easleyjs.springrpg.repository.MonsterRepo;
