@@ -132,16 +132,21 @@ async function handleCommand(cmd) {
         term.write(inputMenu());
     }
 
-    if (cmd === "start") {
+    if (cmd === "F" || cmd === "f") {
+        // Move character to Forest so combat can begin.
+        const locChangeResult = await changePlayerLocation("FOREST");
+
         const res = await fetch("/combat/create", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ playerId: 1 })
+            headers: authHeaders()
         });
 
         const data = await res.json();
-        window.currentEncounterId = data.encounterId;
 
+        console.log(data);
+
+        window.isInCombat = true;
+        term.writeln("You have entered the forest.");
         term.writeln(`Encounter started. Monster HP: ${data.monsterHp}`);
     }
 
@@ -201,6 +206,15 @@ function authHeaders() {
     };
 }
 
+async function changePlayerLocation( location ) {
+    const res = await fetch("/characters/move", {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({"location": location })
+    });
+
+    return res.json();
+}
 
 // TODO: writeScreen/do the log of commands/messages. Clear screen, write those, then write menu
 

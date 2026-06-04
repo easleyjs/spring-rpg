@@ -46,7 +46,6 @@ public class EncounterService {
                 new Random().nextInt(pool.size())
         );
 
-
         Encounter encounter = new Encounter(pc.getId());
         encounter.setPlayerHp(user.getPlayer().getHealth());
 
