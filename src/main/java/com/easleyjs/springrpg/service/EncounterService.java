@@ -37,6 +37,13 @@ public class EncounterService {
             throw new InvalidGameActionException("Must be in Forest to fight.");
         }
 
+        // Check for existing encounter for that player so that we don't start additional encounters.
+        Encounter existingEncounter = encRepo.findByPlayerIdAndStatus(pc.getId(), EncounterStatus.ACTIVE);
+
+        if (existingEncounter != null) {
+            return existingEncounter;
+        }
+
         List<Monster> pool = monsterRepo.findByMinLevelLessThanEqualAndMaxLevelGreaterThanEqual(
                 pc.getLevel(),
                 pc.getLevel()
