@@ -8,10 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import com.easleyjs.springrpg.dto.ErrorResponse;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
+import com.easleyjs.springrpg.dto.ApiErrorResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -19,13 +19,13 @@ public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(
+    public ResponseEntity<ApiErrorResponse> handleNotFound(
             ResourceNotFoundException ex,
             HttpServletRequest request
     ) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponse.of(
+                .body(ApiErrorResponse.of(
                         "NOT FOUND",
                         ex.getMessage(),
                         request.getRequestURI()
@@ -33,13 +33,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidGameActionException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidGameAction(
+    public ResponseEntity<ApiErrorResponse> handleInvalidGameAction(
             InvalidGameActionException ex,
             HttpServletRequest request
     ) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(ErrorResponse.of(
+                .body(ApiErrorResponse.of(
                         "INVALID_GAME_ACTION",
                         ex.getMessage(),
                         request.getRequestURI()
@@ -47,13 +47,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InsufficientResourcesException.class)
-    public ResponseEntity<ErrorResponse> handleInsufficientResources(
+    public ResponseEntity<ApiErrorResponse> handleInsufficientResources(
             InsufficientResourcesException ex,
             HttpServletRequest request
     ) {
         return ResponseEntity
                 .badRequest()
-                .body(ErrorResponse.of(
+                .body(ApiErrorResponse.of(
                    "INSUFFICIENT_RESOURCES",
                    ex.getMessage(),
                    request.getRequestURI()
@@ -61,13 +61,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleAccessDenied(
+    public ResponseEntity<ApiErrorResponse> handleAccessDenied(
             AccessDeniedException ex,
             HttpServletRequest request
     ) {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
-                .body(ErrorResponse.of(
+                .body(ApiErrorResponse.of(
                     "ACCESS_DENIED",
                     "You do not have permission to access this resource",
                     request.getRequestURI()
@@ -75,7 +75,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidation(
+    public ResponseEntity<ApiErrorResponse> handleValidation(
             MethodArgumentNotValidException ex,
             HttpServletRequest request
     ) {
@@ -87,7 +87,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .badRequest()
-                .body(ErrorResponse.of(
+                .body(ApiErrorResponse.of(
                         "VALIDATION_ERROR",
                         "Request validation failed.",
                         details,
@@ -97,7 +97,7 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(
+    public ResponseEntity<ApiErrorResponse> handleException(
             Exception ex,
             HttpServletRequest request
     ) {
@@ -106,7 +106,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ErrorResponse.of(
+                .body(ApiErrorResponse.of(
                         "INTERNAL_SERVER_ERROR",
                         "An unexpected error occurred",
                         request.getRequestURI()
