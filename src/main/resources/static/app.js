@@ -142,12 +142,15 @@ async function handleCommand(cmd) {
         });
 
         const data = await res.json();
-
+        // TODO: if needed, grab vars from the response. Will probably need some kind of isInCombat/encounter
         console.log(data);
 
         window.isInCombat = true;
         term.writeln("You have entered the forest.");
         term.writeln(`Encounter started. Monster HP: ${data.monsterHp}`);
+
+        // TODO: Draw combat menu
+
     }
 
     if (cmd === "attack") {
