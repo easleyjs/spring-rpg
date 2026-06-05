@@ -1,8 +1,7 @@
-let username = "";
-let password = "";
-let character = {};
-let isNewUser = false;
-let newCharacterName = "";
+let username, password, newCharacterName, monsterName = "";
+let character, commands = {};
+let isNewUser, isInCombat = false;
+
 
 const townCommands = {
     "F": "Enter Forest",
@@ -142,12 +141,14 @@ async function handleCommand(cmd) {
         });
 
         const data = await res.json();
-
+        // TODO: if needed, grab vars from the response.
         console.log(data);
 
-        window.isInCombat = true;
-        term.writeln("You have entered the forest.");
-        term.writeln(`Encounter started. Monster HP: ${data.monsterHp}`);
+        isInCombat = true;
+        commands = forestCommands; // swap the active command map
+
+        pushLog(color("You venture into the forest...", "2;37"));
+        pushLog(color(`A ${data.monsterName} appears!`, "1;31"));
     }
 
     if (cmd === "attack") {
@@ -225,10 +226,37 @@ async function changePlayerLocation( location ) {
 // TODO: buy function
 // TODO: turns? add to input menu
 
-function printLog() {
-    for (let i = 0; i < (term.rows - 1); i++) {
+const LOG_SIZE = 200;
+const logBuffer = [];
+
+function pushLog(line) {
+    logBuffer.push(line);
+    if (logBuffer.length > LOG_SIZE) logBuffer.shift();
+    renderScreen();
+}
+
+function renderScreen() {
+    const logRows = term.rows - 2; // rows available for log (1 row = commands, 1 = input)
+
+    // Move to top-left and clear
+    term.write('\x1b[H\x1b[2J');
+
+    // Take the last N entries that fit
+    const visible = logBuffer.slice(-logRows);
+
+    // Pad top with empty lines so content sticks to the bottom of the log area
+    const padding = logRows - visible.length;
+    for (let i = 0; i < padding; i++) {
         term.write('\r\n');
     }
+
+    for (const line of visible) {
+        term.write(line + '\r\n');
+    }
+
+    // Status bar — always last two lines
+    term.write(commandList(commands) + '\r\n');
+    term.write(inputMenu());
 }
 
 function color(text, code) {
