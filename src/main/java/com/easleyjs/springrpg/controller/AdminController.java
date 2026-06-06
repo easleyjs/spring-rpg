@@ -30,7 +30,7 @@ public class AdminController {
     @GetMapping("/items")
     public List<ItemDetailResponse> getItems(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         return itemService.getAllItems(page, size).getContent();
     }
