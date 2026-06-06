@@ -12,6 +12,10 @@ import com.easleyjs.springrpg.exception.InvalidGameActionException;
 import com.easleyjs.springrpg.exception.ResourceNotFoundException;
 import com.easleyjs.springrpg.repository.ItemRepo;
 import com.easleyjs.springrpg.repository.PlayerCharacterRepo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -69,11 +73,16 @@ public class ShopService {
 
     }
 
-    public List<ShopItemResponse> getItems() {
-        return itemRepo.findByShopItem(true)
-                .stream()
-                .map(this::toResponse)
-                .toList();
+    public Page<ShopItemResponse> getItems(int page, int size) {
+        int safeSize = Math.min(size, 50);
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("price").ascending());
+
+        return itemRepo.findByShopItemTrue(pageable)
+                .map(this::toResponse);
     }
 
     public ShopItemResponse toResponse(Item i) {
