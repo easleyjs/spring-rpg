@@ -4,6 +4,8 @@ import com.easleyjs.springrpg.dto.ShopBuyRequest;
 import com.easleyjs.springrpg.dto.ShopBuyResponse;
 import com.easleyjs.springrpg.dto.ShopItemResponse;
 import com.easleyjs.springrpg.service.ShopService;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,8 +20,11 @@ public class ShopController {
     }
 
     @GetMapping("/items")
-    public List<ShopItemResponse> getItems() {
-        return shopService.getItems();
+    public ResponseEntity<Page<ShopItemResponse>> getItems(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return ResponseEntity.ok(shopService.getItems(page, size));
     }
 
     @PostMapping("/buy")
