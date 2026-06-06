@@ -9,6 +9,7 @@ import com.easleyjs.springrpg.entity.PlayerCharacter;
 import com.easleyjs.springrpg.repository.ItemRepo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,7 +29,11 @@ public class ItemService {
 
         int safeSize = Math.min(size, 50);
 
-        PageRequest pageable = PageRequest.of(page, safeSize);
+        PageRequest pageable = PageRequest.of(
+                page,
+                safeSize,
+                Sort.by(Sort.Direction.ASC, "id")
+        );
 
         return itemRepo.findAll(pageable)
                 .map(this::toResponse);
