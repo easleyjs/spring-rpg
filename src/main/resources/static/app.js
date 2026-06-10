@@ -144,14 +144,9 @@ async function handleCommand(cmd) {
         pushLog(color(`A ${encounter.monsterName} appears!`, "1;31"));
     }
 
-    if (cmd === "A") {
-        const res = await fetch("/combat/attack", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ encounterId: window.currentEncounterId })
-        });
-
-        const data = await res.json();
+    if (cmd === "A" && isInCombat) {
+        const data = await makeAttack();
+        console.log(data);
 
         term.writeln(data.message);
         term.writeln(`HP: ${data.playerHp} | Monster: ${data.monsterHp}`);
@@ -212,6 +207,15 @@ async function changePlayerLocation( location ) {
 
 async function startCombat() {
     const res = await fetch("/combat/create", {
+        method: "POST",
+        headers: authHeaders()
+    });
+
+    return res.json();
+}
+
+async function makeAttack() {
+    const res = await fetch("/combat/attack", {
         method: "POST",
         headers: authHeaders()
     });

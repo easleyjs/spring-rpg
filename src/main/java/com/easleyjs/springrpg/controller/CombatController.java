@@ -1,6 +1,5 @@
 package com.easleyjs.springrpg.controller;
 
-import com.easleyjs.springrpg.dto.AttackRequest;
 import com.easleyjs.springrpg.dto.CombatResult;
 import com.easleyjs.springrpg.dto.EncounterStartResponse;
 import com.easleyjs.springrpg.entity.Encounter;
@@ -35,8 +34,8 @@ public class CombatController {
     }
 
     @PostMapping("/attack")
-    public CombatResult attack(@RequestBody AttackRequest request) {
-        return combatService.attack(request.getEncounterId());
+    public CombatResult attack() {
+        return combatService.attack();
     }
     //TODO: Review this one for security
     @GetMapping("/{id}")

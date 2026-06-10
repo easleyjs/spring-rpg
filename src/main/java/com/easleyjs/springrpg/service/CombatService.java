@@ -25,16 +25,8 @@ public class CombatService {
         this.encRepo = encRepo;
     }
 
-    public CombatResult attack(long encounterId) {
+    public CombatResult attack() {
         String message;
-        Encounter enc = encRepo.findById(encounterId)
-                .orElseThrow(
-                        () -> new ResourceNotFoundException(
-                                String.format("Encounter with id %d not found", encounterId)));
-
-        if (enc.getStatus() != EncounterStatus.ACTIVE) {
-            throw new InvalidGameActionException("Encounter with id " + encounterId + " is not ACTIVE");
-        }
 
         User user = (User) SecurityContextHolder
                 .getContext()
@@ -46,6 +38,11 @@ public class CombatService {
         if (pc.getLocation() != Location.FOREST) {
             throw new InvalidGameActionException("Must be in Forest to fight.");
         }
+
+        Encounter enc = encRepo.findByPlayerIdAndStatus(pc.getId(), EncounterStatus.ACTIVE)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(
+                                String.format("No Active Encounters found for player.")));
 
         InventoryItem invWeapon = invRepo.findByPlayerIdAndEquippedTrueAndItem_ItemType(
                 pc.getId(),
@@ -91,7 +88,7 @@ public class CombatService {
 
             if (enc.getPlayerHp() == 0) {
                 enc.setStatus(EncounterStatus.LOST);
-                System.out.println("Encounter" + encounterId+ " lost");
+
                 message += String.format(
                         "\n%s attacks you for %d damage.\nYou are dead.",
                         monsterName, monsterDamage);
@@ -102,6 +99,7 @@ public class CombatService {
             }
         }
         encRepo.save(enc);
+
         return new CombatResult(
                 enc.getPlayerHp(),
                 monsterHp,
