@@ -1,5 +1,5 @@
 let username, password, newCharacterName, monsterName = "";
-let character, commands = {};
+let character, commands, encounter = {};
 let isNewUser, isInCombat = false;
 
 
@@ -88,7 +88,6 @@ async function handleCommand(cmd) {
         password = input;
         await login(username, password);
         character = await getCharacter();
-        console.log(character);
 
         term.clear();
 
@@ -135,18 +134,17 @@ async function handleCommand(cmd) {
         // Move character to Forest so combat can begin.
         const locChangeResult = await changePlayerLocation("FOREST");
 
-        const data = await startCombat();
-        // TODO: if needed, grab vars from the response.
-        console.log(data);
+        encounter = await startCombat();
+        console.log(encounter);
 
         isInCombat = true;
         commands = forestCommands; // swap the active command map
 
         pushLog(color("You venture into the forest...", "2;37"));
-        pushLog(color(`A ${data.monsterName} appears!`, "1;31"));
+        pushLog(color(`A ${encounter.monsterName} appears!`, "1;31"));
     }
 
-    if (cmd === "attack") {
+    if (cmd === "A") {
         const res = await fetch("/combat/attack", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
