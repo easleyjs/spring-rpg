@@ -135,12 +135,7 @@ async function handleCommand(cmd) {
         // Move character to Forest so combat can begin.
         const locChangeResult = await changePlayerLocation("FOREST");
 
-        const res = await fetch("/combat/create", {
-            method: "POST",
-            headers: authHeaders()
-        });
-
-        const data = await res.json();
+        const data = await startCombat();
         // TODO: if needed, grab vars from the response.
         console.log(data);
 
@@ -212,6 +207,15 @@ async function changePlayerLocation( location ) {
         method: "POST",
         headers: authHeaders(),
         body: JSON.stringify({"location": location })
+    });
+
+    return res.json();
+}
+
+async function startCombat() {
+    const res = await fetch("/combat/create", {
+        method: "POST",
+        headers: authHeaders()
     });
 
     return res.json();
