@@ -148,6 +148,12 @@ async function handleCommand(cmd) {
         const data = await makeAttack();
         console.log(data);
 
+        /*
+        // TODO: Make sure attacks work in the db / verify first attack hits and does damage
+        // TODO: Parse return messages and add to log
+        // TODO: Once enemy is dead, display message and return to forest
+         */
+
         term.writeln(data.message);
         term.writeln(`HP: ${data.playerHp} | Monster: ${data.monsterHp}`);
     }

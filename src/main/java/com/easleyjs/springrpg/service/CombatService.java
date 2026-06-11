@@ -126,6 +126,7 @@ public class CombatService {
     private void applyPlayerAttack(Encounter enc, int damage) {
         EncounterMonster em = enc.getMonsters().get(0);
         em.setCurrentHealth(Math.max(0, em.getCurrentHealth() - damage));
+
     }
 
     private void applyMonsterAttack(Encounter enc, int damage) {

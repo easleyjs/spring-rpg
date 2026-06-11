@@ -35,7 +35,8 @@ public class EncounterService {
         }
 
         // Check for existing encounter for that player so that we don't start additional encounters.
-        Encounter encounter = encRepo.findByPlayerIdAndStatus(
+
+        return encRepo.findByPlayerIdAndStatus(
                 pc.getId(),
                 EncounterStatus.ACTIVE
         ).orElseGet(() -> {
@@ -43,29 +44,27 @@ public class EncounterService {
             newEncounter.setPlayerId(pc.getId());
             newEncounter.setPlayerHp(user.getPlayer().getHealth());
 
-            return newEncounter;
+            List<Monster> pool = monsterRepo.findByMinLevelLessThanEqualAndMaxLevelGreaterThanEqual(
+                    pc.getLevel(),
+                    pc.getLevel()
+            );
+
+            Monster monster = pool.get(
+                    new Random().nextInt(pool.size())
+            );
+
+            EncounterMonster em = new EncounterMonster();
+            em.setName(monster.getName());
+            em.setCurrentHealth(monster.getBaseHealth());
+            em.setDamage(monster.getBaseDamage());
+            em.setXp(monster.getXp());
+            em.setEncounter(newEncounter);
+
+            newEncounter.getMonsters().add(em);
+            newEncounter.setStatus(EncounterStatus.ACTIVE);
+
+            return encRepo.save(newEncounter);
         });
-
-        List<Monster> pool = monsterRepo.findByMinLevelLessThanEqualAndMaxLevelGreaterThanEqual(
-                pc.getLevel(),
-                pc.getLevel()
-        );
-
-        Monster monster = pool.get(
-                new Random().nextInt(pool.size())
-        );
-
-        EncounterMonster em = new EncounterMonster();
-        em.setName(monster.getName());
-        em.setCurrentHealth(monster.getBaseHealth());
-        em.setDamage(monster.getBaseDamage());
-        em.setXp(monster.getXp());
-        em.setEncounter(encounter);
-
-        encounter.getMonsters().add(em);
-        encounter.setStatus(EncounterStatus.ACTIVE);
-
-        return encRepo.save(encounter);
     }
 
     public Encounter getEncounter(long id) {
