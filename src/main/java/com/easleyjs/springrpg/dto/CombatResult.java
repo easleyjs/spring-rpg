@@ -12,6 +12,6 @@ public class CombatResult {
     public int playerHp;
     public int monsterHp;
     public int damage;
-    public List<String> message;
+    public List<String> messages;
     EncounterStatus status;
 }
