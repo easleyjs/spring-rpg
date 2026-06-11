@@ -50,15 +50,16 @@ public class CombatService {
                         () -> new ResourceNotFoundException("Weapon not found for player"));
         int attackDamage = calculateDamage(pc);
 
-        EncounterMonster em = enc.getMonsters().get(0);
+        System.out.println("Player attack dmg: " + attackDamage);
+
+        EncounterMonster em = enc.getMonsters().getFirst();
 
         String monsterName = em.getName();
         int monsterDamage = em.getDamage();
-        int monsterHp = em.getCurrentHealth();
 
-        applyPlayerAttack(enc, attackDamage);
+        applyPlayerAttack(em, attackDamage);
 
-        if (monsterHp == 0) {
+        if (em.getCurrentHealth() == 0) {
             enc.setStatus(EncounterStatus.WON);
             encRepo.save(enc);
 
@@ -75,7 +76,7 @@ public class CombatService {
 
             return new CombatResult(
                     enc.getPlayerHp(),
-                    monsterHp,
+                    em.getCurrentHealth(),
                     attackDamage,
                     message,
                     enc.getStatus());
@@ -102,7 +103,7 @@ public class CombatService {
 
         return new CombatResult(
                 enc.getPlayerHp(),
-                monsterHp,
+                em.getCurrentHealth(),
                 attackDamage,
                 message,
                 enc.getStatus());
@@ -119,14 +120,13 @@ public class CombatService {
         int weaponFlatBonus = invWeapon.getItem().getDamageBonus();
         int weaponDmgMultiplier = invWeapon.getItem().getDamageMultiplier();
 
-        return (int)((baseAttack + weaponFlatBonus)
+        return ((baseAttack + weaponFlatBonus)
                 * weaponDmgMultiplier);
     }
 
-    private void applyPlayerAttack(Encounter enc, int damage) {
-        EncounterMonster em = enc.getMonsters().get(0);
+    private void applyPlayerAttack(EncounterMonster em, int damage) {
         em.setCurrentHealth(Math.max(0, em.getCurrentHealth() - damage));
-
+        System.out.println(em.getCurrentHealth());
     }
 
     private void applyMonsterAttack(Encounter enc, int damage) {
