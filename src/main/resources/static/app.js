@@ -149,13 +149,11 @@ async function handleCommand(cmd) {
         console.log(data);
 
         /*
-        // TODO: Make sure attacks work in the db / verify first attack hits and does damage
         // TODO: Parse return messages and add to log
-        // TODO: Once enemy is dead, display message and return to forest
+        // TODO: Once enemy is dead, display message, set isInCombat boolean to false, return to forest
          */
 
-        term.writeln(data.message);
-        term.writeln(`HP: ${data.playerHp} | Monster: ${data.monsterHp}`);
+        pushLog(data.message);
     }
 }
 
@@ -232,7 +230,6 @@ async function makeAttack() {
 // TODO: writeScreen/do the log of commands/messages. Clear screen, write those, then write menu
 
 // TODO: getInventory function
-// TODO: startCombat function
 // TODO: attack function
 // TODO: shop function (get list of items)
 // TODO: buy function
