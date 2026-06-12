@@ -1,5 +1,5 @@
 let username, password, newCharacterName, monsterName = "";
-let character, commands = {};
+let character, commands, encounter = {};
 let isNewUser, isInCombat = false;
 
 
@@ -88,7 +88,6 @@ async function handleCommand(cmd) {
         password = input;
         await login(username, password);
         character = await getCharacter();
-        console.log(character);
 
         term.clear();
 
@@ -125,7 +124,7 @@ async function handleCommand(cmd) {
         newCharacterName = input;
 
         const res = await createCharacter(input);
-        login(username, password);
+        await login(username, password);
 
         term.write("\r\n");
         term.write(inputMenu());
@@ -135,33 +134,43 @@ async function handleCommand(cmd) {
         // Move character to Forest so combat can begin.
         const locChangeResult = await changePlayerLocation("FOREST");
 
-        const res = await fetch("/combat/create", {
-            method: "POST",
-            headers: authHeaders()
-        });
-
-        const data = await res.json();
-        // TODO: if needed, grab vars from the response.
-        console.log(data);
+        encounter = await startCombat();
 
         isInCombat = true;
         commands = forestCommands; // swap the active command map
 
         pushLog(color("You venture into the forest...", "2;37"));
-        pushLog(color(`A ${data.monsterName} appears!`, "1;31"));
+        pushLog(color(`A ${encounter.monsterName} appears!`, "1;31"));
     }
 
-    if (cmd === "attack") {
-        const res = await fetch("/combat/attack", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ encounterId: window.currentEncounterId })
+    if (cmd === "A" && isInCombat) {
+        const data = await makeAttack();
+        console.log(data);
+
+        // TODO: Verify that player hp is being updated both on backend and in app
+        // should be working well on backend now. Need to verify and update where necessary here
+        // TODO: If player dies, display message, return to town
+
+        character.health = data.playerHp;
+
+        data.messages.forEach(message => {
+            pushLog(message);
         });
 
-        const data = await res.json();
 
-        term.writeln(data.message);
-        term.writeln(`HP: ${data.playerHp} | Monster: ${data.monsterHp}`);
+        if (data.status === "WON") {
+            encounter = await startCombat();
+
+            pushLog("");
+            pushLog(color(`A ${encounter.monsterName} appears!`, "1;31"));
+        }
+
+        if (data.status === "LOST") {
+            await changePlayerLocation("TOWN");
+            isInCombat = false;
+            commands = townCommands;
+            pushLog("You have been returned to town.");
+        }
     }
 }
 
@@ -217,11 +226,25 @@ async function changePlayerLocation( location ) {
     return res.json();
 }
 
-// TODO: writeScreen/do the log of commands/messages. Clear screen, write those, then write menu
+async function startCombat() {
+    const res = await fetch("/combat/create", {
+        method: "POST",
+        headers: authHeaders()
+    });
+
+    return res.json();
+}
+
+async function makeAttack() {
+    const res = await fetch("/combat/attack", {
+        method: "POST",
+        headers: authHeaders()
+    });
+
+    return res.json();
+}
 
 // TODO: getInventory function
-// TODO: startCombat function
-// TODO: attack function
 // TODO: shop function (get list of items)
 // TODO: buy function
 // TODO: turns? add to input menu

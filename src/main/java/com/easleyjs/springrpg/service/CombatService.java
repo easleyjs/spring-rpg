@@ -6,9 +6,13 @@ import com.easleyjs.springrpg.exception.InvalidGameActionException;
 import com.easleyjs.springrpg.exception.ResourceNotFoundException;
 import com.easleyjs.springrpg.repository.EncounterRepo;
 import com.easleyjs.springrpg.repository.InventoryRepo;
+import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.easleyjs.springrpg.repository.PlayerCharacterRepo;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class CombatService {
@@ -25,16 +29,9 @@ public class CombatService {
         this.encRepo = encRepo;
     }
 
-    public CombatResult attack(long encounterId) {
-        String message;
-        Encounter enc = encRepo.findById(encounterId)
-                .orElseThrow(
-                        () -> new ResourceNotFoundException(
-                                String.format("Encounter with id %d not found", encounterId)));
-
-        if (enc.getStatus() != EncounterStatus.ACTIVE) {
-            throw new InvalidGameActionException("Encounter with id " + encounterId + " is not ACTIVE");
-        }
+    @Transactional
+    public CombatResult attack() {
+        List<String> messages = new ArrayList<>();
 
         User user = (User) SecurityContextHolder
                 .getContext()
@@ -47,27 +44,39 @@ public class CombatService {
             throw new InvalidGameActionException("Must be in Forest to fight.");
         }
 
+        Encounter enc = encRepo.findByPlayerCharacterIdAndStatus(
+                pc.getId(),
+                EncounterStatus.ACTIVE)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(
+                            "No Active Encounters found for player."
+                        )
+                );
+
         InventoryItem invWeapon = invRepo.findByPlayerIdAndEquippedTrueAndItem_ItemType(
                 pc.getId(),
                 ItemType.WEAPON).orElseThrow(
                         () -> new ResourceNotFoundException("Weapon not found for player"));
         int attackDamage = calculateDamage(pc);
 
-        EncounterMonster em = enc.getMonsters().get(0);
+        EncounterMonster em = enc.getMonsters().getFirst();
 
         String monsterName = em.getName();
         int monsterDamage = em.getDamage();
-        int monsterHp = em.getCurrentHealth();
 
-        applyPlayerAttack(enc, attackDamage);
+        applyPlayerAttack(em, attackDamage);
 
-        if (monsterHp == 0) {
+        if (em.getCurrentHealth() == 0) {
             enc.setStatus(EncounterStatus.WON);
             encRepo.save(enc);
 
-            message = String.format(
-                    "You attack %s for %d damage.\n%s is dead.\nYou gained +10 XP",
-                    monsterName, attackDamage, monsterName);
+            messages.add(String.format(
+                    "You attack %s for %d damage.",
+                    monsterName, attackDamage));
+            messages.add(String.format(
+                    "%s is dead.", monsterName
+            ));
+            messages.add(String.format("You gained +%s XP", em.getXp()));
 
             pc.setXp(pc.getXp() + 10);
             if (pc.getXp() >= 100) {
@@ -77,36 +86,38 @@ public class CombatService {
             pcRepo.save(pc);
 
             return new CombatResult(
-                    enc.getPlayerHp(),
-                    monsterHp,
+                    enc.getPlayerCharacter().getHealth(),
+                    em.getCurrentHealth(),
                     attackDamage,
-                    message,
+                    messages,
                     enc.getStatus());
         } else {
-            message = String.format(
+            messages.add(String.format(
                     "You attack %s with %s for %d damage.",
-                    monsterName, invWeapon.getItem().getName(), attackDamage);
+                    monsterName, invWeapon.getItem().getName(), attackDamage));
 
             applyMonsterAttack(enc, monsterDamage);
 
-            if (enc.getPlayerHp() == 0) {
+            if (enc.getPlayerCharacter().getHealth() == 0) {
                 enc.setStatus(EncounterStatus.LOST);
-                System.out.println("Encounter" + encounterId+ " lost");
-                message += String.format(
-                        "\n%s attacks you for %d damage.\nYou are dead.",
-                        monsterName, monsterDamage);
+
+                messages.add(String.format(
+                        "%s attacks you for %d damage.",
+                        monsterName, monsterDamage));
+                messages.add("You are dead.");
             } else {
-                message += String.format(
-                        "\n%s attacks you for %d damage.",
-                        monsterName, monsterDamage);
+                messages.add(String.format(
+                        "%s attacks you for %d damage.",
+                        monsterName, monsterDamage));
             }
         }
         encRepo.save(enc);
+
         return new CombatResult(
-                enc.getPlayerHp(),
-                monsterHp,
+                enc.getPlayerCharacter().getHealth(),
+                em.getCurrentHealth(),
                 attackDamage,
-                message,
+                messages,
                 enc.getStatus());
     }
 
@@ -121,16 +132,20 @@ public class CombatService {
         int weaponFlatBonus = invWeapon.getItem().getDamageBonus();
         int weaponDmgMultiplier = invWeapon.getItem().getDamageMultiplier();
 
-        return (int)((baseAttack + weaponFlatBonus)
+        return ((baseAttack + weaponFlatBonus)
                 * weaponDmgMultiplier);
     }
 
-    private void applyPlayerAttack(Encounter enc, int damage) {
-        EncounterMonster em = enc.getMonsters().get(0);
+    private void applyPlayerAttack(EncounterMonster em, int damage) {
         em.setCurrentHealth(Math.max(0, em.getCurrentHealth() - damage));
     }
 
     private void applyMonsterAttack(Encounter enc, int damage) {
-        enc.setPlayerHp(Math.max(0, enc.getPlayerHp() - damage));
+        enc.getPlayerCharacter().setHealth(
+                Math.max(
+                        0,
+                        enc.getPlayerCharacter().getHealth() - damage
+                )
+        );
     }
 }
