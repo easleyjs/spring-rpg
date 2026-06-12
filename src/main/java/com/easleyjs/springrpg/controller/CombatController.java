@@ -37,6 +37,7 @@ public class CombatController {
     public CombatResult attack() {
         return combatService.attack();
     }
+
     //TODO: Review this one for security
     @GetMapping("/{id}")
     public Encounter getEncounter(@PathVariable long id) {

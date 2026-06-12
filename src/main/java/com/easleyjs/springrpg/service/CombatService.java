@@ -80,7 +80,7 @@ public class CombatService {
             pcRepo.save(pc);
 
             return new CombatResult(
-                    enc.getPlayerHp(),
+                    enc.getPlayerCharacter().getHealth(),
                     em.getCurrentHealth(),
                     attackDamage,
                     messages,
@@ -92,7 +92,7 @@ public class CombatService {
 
             applyMonsterAttack(enc, monsterDamage);
 
-            if (enc.getPlayerHp() == 0) {
+            if (enc.getPlayerCharacter().getHealth() == 0) {
                 enc.setStatus(EncounterStatus.LOST);
 
                 messages.add(String.format(
@@ -108,7 +108,7 @@ public class CombatService {
         encRepo.save(enc);
 
         return new CombatResult(
-                enc.getPlayerHp(),
+                enc.getPlayerCharacter().getHealth(),
                 em.getCurrentHealth(),
                 attackDamage,
                 messages,
@@ -132,10 +132,14 @@ public class CombatService {
 
     private void applyPlayerAttack(EncounterMonster em, int damage) {
         em.setCurrentHealth(Math.max(0, em.getCurrentHealth() - damage));
-        System.out.println(em.getCurrentHealth());
     }
 
     private void applyMonsterAttack(Encounter enc, int damage) {
-        enc.setPlayerHp(Math.max(0, enc.getPlayerHp() - damage));
+        enc.getPlayerCharacter().setHealth(
+                Math.max(
+                        0,
+                        enc.getPlayerCharacter().getHealth() - damage
+                )
+        );
     }
 }
