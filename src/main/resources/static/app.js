@@ -151,18 +151,25 @@ async function handleCommand(cmd) {
         // should be working well on backend now. Need to verify and update where necessary here
         // TODO: If player dies, display message, return to town
 
+        character.health = data.playerHp;
+
         data.messages.forEach(message => {
             pushLog(message);
         });
 
+
         if (data.status === "WON") {
             encounter = await startCombat();
-            console.log(encounter);
+
+            pushLog("");
             pushLog(color(`A ${encounter.monsterName} appears!`, "1;31"));
         }
 
         if (data.status === "LOST") {
             await changePlayerLocation("TOWN");
+            isInCombat = false;
+            commands = townCommands;
+            pushLog("You have been returned to town.");
         }
     }
 }
@@ -237,10 +244,7 @@ async function makeAttack() {
     return res.json();
 }
 
-// TODO: writeScreen/do the log of commands/messages. Clear screen, write those, then write menu
-
 // TODO: getInventory function
-// TODO: attack function
 // TODO: shop function (get list of items)
 // TODO: buy function
 // TODO: turns? add to input menu
