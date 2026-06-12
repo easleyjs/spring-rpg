@@ -27,7 +27,7 @@ public class CombatController {
 
         return new EncounterStartResponse(
                 enc.getId(),
-                enc.getPlayerHp(),
+                enc.getPlayerCharacter().getHealth(),
                 enc.getMonsters().get(0).getName(),
                 enc.getMonsters().get(0).getCurrentHealth(),
                 enc.getStatus()
