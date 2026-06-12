@@ -124,7 +124,7 @@ async function handleCommand(cmd) {
         newCharacterName = input;
 
         const res = await createCharacter(input);
-        login(username, password);
+        await login(username, password);
 
         term.write("\r\n");
         term.write(inputMenu());
@@ -148,6 +148,7 @@ async function handleCommand(cmd) {
         console.log(data);
 
         // TODO: Verify that player hp is being updated both on backend and in app
+        // should be working well on backend now. Need to verify and update where necessary here
         // TODO: If player dies, display message, return to town
 
         data.messages.forEach(message => {

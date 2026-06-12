@@ -42,10 +42,14 @@ public class CombatService {
             throw new InvalidGameActionException("Must be in Forest to fight.");
         }
 
-        Encounter enc = encRepo.findByPlayerIdAndStatus(pc.getId(), EncounterStatus.ACTIVE)
+        Encounter enc = encRepo.findByPlayerCharacterIdAndStatus(
+                pc.getId(),
+                EncounterStatus.ACTIVE)
                 .orElseThrow(
                         () -> new ResourceNotFoundException(
-                                String.format("No Active Encounters found for player.")));
+                            "No Active Encounters found for player."
+                        )
+                );
 
         InventoryItem invWeapon = invRepo.findByPlayerIdAndEquippedTrueAndItem_ItemType(
                 pc.getId(),
