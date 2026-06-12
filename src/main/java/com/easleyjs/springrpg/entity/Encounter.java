@@ -16,8 +16,10 @@ public class Encounter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private long playerId;
-    private int playerHp;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "player_character_id", nullable = false)
+    private PlayerCharacter playerCharacter;
 
     @OneToMany(mappedBy = "encounter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EncounterMonster> monsters = new ArrayList<>();
@@ -25,7 +27,7 @@ public class Encounter {
     @Enumerated(EnumType.STRING)
     private EncounterStatus status;
 
-    public Encounter(long playerId) {
-        this.playerId = playerId;
+    public Encounter(PlayerCharacter player) {
+        this.playerCharacter = player;
     }
 }

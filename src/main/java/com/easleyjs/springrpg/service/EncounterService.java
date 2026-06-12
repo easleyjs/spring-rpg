@@ -5,6 +5,7 @@ import com.easleyjs.springrpg.exception.InvalidGameActionException;
 import com.easleyjs.springrpg.exception.ResourceNotFoundException;
 import com.easleyjs.springrpg.repository.EncounterRepo;
 import com.easleyjs.springrpg.repository.MonsterRepo;
+import com.easleyjs.springrpg.repository.UserRepo;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -13,12 +14,16 @@ import java.util.Random;
 @Service
 public class EncounterService {
     private final EncounterRepo encRepo;
+    private final UserRepo userRepo;
     private final MonsterRepo monsterRepo;
 
     public EncounterService(
             EncounterRepo encRepo,
-            MonsterRepo monsterRepo) {
+            UserRepo userRepo,
+            MonsterRepo monsterRepo
+    ) {
         this.encRepo = encRepo;
+        this.userRepo = userRepo;
         this.monsterRepo = monsterRepo;
     }
 
@@ -35,42 +40,41 @@ public class EncounterService {
         }
 
         // Check for existing encounter for that player so that we don't start additional encounters.
+        Encounter existingEncounter = encRepo.findByPlayerIdAndStatus(pc.getId(), EncounterStatus.ACTIVE);
 
-        return encRepo.findByPlayerIdAndStatus(
-                pc.getId(),
-                EncounterStatus.ACTIVE
-        ).orElseGet(() -> {
-            Encounter newEncounter = new Encounter();
-            newEncounter.setPlayerId(pc.getId());
-            newEncounter.setPlayerHp(user.getPlayer().getHealth());
+        if (existingEncounter != null) {
+            return existingEncounter;
+        }
 
-            List<Monster> pool = monsterRepo.findByMinLevelLessThanEqualAndMaxLevelGreaterThanEqual(
-                    pc.getLevel(),
-                    pc.getLevel()
-            );
+        List<Monster> pool = monsterRepo.findByMinLevelLessThanEqualAndMaxLevelGreaterThanEqual(
+                pc.getLevel(),
+                pc.getLevel()
+        );
 
-            Monster monster = pool.get(
-                    new Random().nextInt(pool.size())
-            );
+        Monster monster = pool.get(
+                new Random().nextInt(pool.size())
+        );
 
-            EncounterMonster em = new EncounterMonster();
-            em.setName(monster.getName());
-            em.setCurrentHealth(monster.getBaseHealth());
-            em.setDamage(monster.getBaseDamage());
-            em.setXp(monster.getXp());
-            em.setEncounter(newEncounter);
+        Encounter encounter = new Encounter(user.getPlayer());
 
-            newEncounter.getMonsters().add(em);
-            newEncounter.setStatus(EncounterStatus.ACTIVE);
+        EncounterMonster em = new EncounterMonster();
+        em.setName(monster.getName());
+        em.setCurrentHealth(monster.getBaseHealth());
+        em.setDamage(monster.getBaseDamage());
+        em.setXp(monster.getXp());
+        em.setEncounter(encounter);
 
-            return encRepo.save(newEncounter);
-        });
+        encounter.getMonsters().add(em);
+        encounter.setStatus(EncounterStatus.ACTIVE);
+
+        return encRepo.save(encounter);
     }
 
     public Encounter getEncounter(long id) {
-        return encRepo.findById(id)
+        Encounter encounter = encRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("Encounter with id " + id + " not found", id)));
+        return encounter;
     }
 
     public List<Encounter> getAllEncounters() {
