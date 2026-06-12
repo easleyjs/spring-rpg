@@ -135,7 +135,6 @@ async function handleCommand(cmd) {
         const locChangeResult = await changePlayerLocation("FOREST");
 
         encounter = await startCombat();
-        console.log(encounter);
 
         isInCombat = true;
         commands = forestCommands; // swap the active command map
@@ -148,12 +147,22 @@ async function handleCommand(cmd) {
         const data = await makeAttack();
         console.log(data);
 
-        /*
-        // TODO: Parse return messages and add to log
-        // TODO: Once enemy is dead, display message, set isInCombat boolean to false, return to forest
-         */
+        // TODO: Verify that player hp is being updated both on backend and in app
+        // TODO: If player dies, display message, return to town
 
-        pushLog(data.message);
+        data.messages.forEach(message => {
+            pushLog(message);
+        });
+
+        if (data.status === "WON") {
+            encounter = await startCombat();
+            console.log(encounter);
+            pushLog(color(`A ${encounter.monsterName} appears!`, "1;31"));
+        }
+
+        if (data.status === "LOST") {
+            await changePlayerLocation("TOWN");
+        }
     }
 }
 
