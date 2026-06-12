@@ -19,7 +19,9 @@ public class EncounterService {
 
     public EncounterService(
             EncounterRepo encRepo,
-            UserRepo userRepo, MonsterRepo monsterRepo) {
+            UserRepo userRepo,
+            MonsterRepo monsterRepo
+    ) {
         this.encRepo = encRepo;
         this.userRepo = userRepo;
         this.monsterRepo = monsterRepo;
@@ -53,8 +55,7 @@ public class EncounterService {
                 new Random().nextInt(pool.size())
         );
 
-        Encounter encounter = new Encounter(pc.getId());
-        encounter.setPlayerHp(user.getPlayer().getHealth());
+        Encounter encounter = new Encounter(user.getPlayer());
 
         EncounterMonster em = new EncounterMonster();
         em.setName(monster.getName());
