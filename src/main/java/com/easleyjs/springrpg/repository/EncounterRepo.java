@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface EncounterRepo extends
         JpaRepository<Encounter, Long> {
-    Optional<Encounter> findByPlayerIdAndStatus(Long playerId, EncounterStatus status);
+    Optional<Encounter> findByPlayerCharacterIdAndStatus(Long id, EncounterStatus encounterStatus);
 }
