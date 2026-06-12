@@ -6,6 +6,7 @@ import com.easleyjs.springrpg.exception.InvalidGameActionException;
 import com.easleyjs.springrpg.exception.ResourceNotFoundException;
 import com.easleyjs.springrpg.repository.EncounterRepo;
 import com.easleyjs.springrpg.repository.InventoryRepo;
+import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.easleyjs.springrpg.repository.PlayerCharacterRepo;
@@ -28,6 +29,7 @@ public class CombatService {
         this.encRepo = encRepo;
     }
 
+    @Transactional
     public CombatResult attack() {
         List<String> messages = new ArrayList<>();
 
