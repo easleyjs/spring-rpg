@@ -244,6 +244,15 @@ async function makeAttack() {
     return res.json();
 }
 
+async function getInventory() {
+    const res = await fetch("/inventory/me", {
+        method: "GET",
+        headers: authHeaders()
+    });
+
+    return res.json();
+}
+
 // TODO: getInventory function
 // TODO: shop function (get list of items)
 // TODO: buy function
