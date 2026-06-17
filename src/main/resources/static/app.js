@@ -142,14 +142,18 @@ async function handleCommand(cmd) {
         pushLog(color("You venture into the forest...", "2;37"));
         pushLog(color(`A ${encounter.monsterName} appears!`, "1;31"));
     }
+    //TODO: Add "damage" attribute to returned inventory list so player can evaluate
+
+    if (cmd === "I") {
+        const data = await getInventory();
+        console.log(data);
+
+        pushLog("Inventory test.");
+    }
 
     if (cmd === "A" && isInCombat) {
         const data = await makeAttack();
         console.log(data);
-
-        // TODO: Verify that player hp is being updated both on backend and in app
-        // should be working well on backend now. Need to verify and update where necessary here
-        // TODO: If player dies, display message, return to town
 
         character.health = data.playerHp;
 
