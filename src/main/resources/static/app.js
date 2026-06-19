@@ -142,13 +142,42 @@ async function handleCommand(cmd) {
         pushLog(color("You venture into the forest...", "2;37"));
         pushLog(color(`A ${encounter.monsterName} appears!`, "1;31"));
     }
-    //TODO: Add "damage" attribute to returned inventory list so player can evaluate
 
     if (cmd === "I") {
         const data = await getInventory();
-        console.log(data);
 
-        pushLog("Inventory test.");
+        const tableTitle = "Inventory";
+        const tableCols = [
+            "#",
+            "Item Name",
+            "Type",
+            "Damage/Reduction",
+            "Quantity",
+            "Equipped"
+        ];
+        const tableRows = data.map(((item, idx) => {
+            return [
+                idx + 1,
+                item.itemName,
+                item.itemType,
+                item.damage,
+                item.quantity,
+                item.equipped
+            ]
+        }));
+
+        const invTable = asciiTable(tableTitle, tableCols, tableRows);
+        console.log(invTable);
+
+        commands = {
+            b: "Back",
+            u: "Use",
+            d: "Drop"
+        };
+
+        pushLogLines(invTable);
+
+        //pushLog("Inventory test.");
     }
 
     if (cmd === "A" && isInCombat) {
@@ -315,4 +344,77 @@ function inputMenu() {
         + ` Level: ` + color(character.level, 33) + ` `
         + ` Gold: ` + color(character.gold, 33) + ` `
         + `): `;
+}
+
+function pushLogLines(lines) {
+    for (const line of lines) {
+        logBuffer.push(line);
+        if (logBuffer.length > LOG_SIZE) logBuffer.shift();
+    }
+
+    renderScreen();
+}
+
+function stripAnsi(str) {
+    return String(str).replace(/\x1b\[[0-9;]*m/g, "");
+}
+
+function visibleLength(str) {
+    return stripAnsi(str).length;
+}
+
+function padRight(str, width) {
+    const diff = width - visibleLength(str);
+    return String(str) + " ".repeat(Math.max(0, diff));
+}
+
+function centerText(str, width) {
+    const len = visibleLength(str);
+    const totalPadding = Math.max(0, width - len);
+    const left = Math.floor(totalPadding / 2);
+    const right = totalPadding - left;
+    return " ".repeat(left) + str + " ".repeat(right);
+}
+
+function makeBorder(widths) {
+    return "+" + widths.map(w => "-".repeat(w + 2)).join("+") + "+";
+}
+
+function makeRow(values, widths) {
+    return "|" + values.map((value, i) => {
+        return " " + padRight(value, widths[i]) + " ";
+    }).join("|") + "|";
+}
+
+function asciiTable(title, columns, rows) {
+
+    const stringRows = rows.map(row =>
+        row.map(value => value == null ? "" : String(value))
+    );
+
+    const widths = columns.map((col, i) => {
+        const columnWidth = visibleLength(col);
+
+        const rowWidth = stringRows.reduce((max, row) => {
+            return Math.max(max, visibleLength(row[i] ?? ""));
+        }, 0);
+
+        return Math.max(columnWidth, rowWidth);
+    });
+
+    const border = makeBorder(widths);
+    const tableWidth = visibleLength(border);
+
+    const titleLine = "|" + centerText(title, tableWidth - 2) + "|";
+    const headerLine = makeRow(columns, widths);
+
+    return [
+        border,
+        titleLine,
+        border,
+        headerLine,
+        border,
+        ...stringRows.map(row => makeRow(row, widths)),
+        border
+    ];
 }
