@@ -167,17 +167,15 @@ async function handleCommand(cmd) {
         }));
 
         const invTable = asciiTable(tableTitle, tableCols, tableRows);
-        console.log(invTable);
 
         commands = {
-            b: "Back",
-            u: "Use",
-            d: "Drop"
+            U: "Use Item",
+            E: "Equip Item",
+            D: "Drop Item",
+            B: "Back",
         };
 
         pushLogLines(invTable);
-
-        //pushLog("Inventory test.");
     }
 
     if (cmd === "A" && isInCombat) {
@@ -286,7 +284,6 @@ async function getInventory() {
     return res.json();
 }
 
-// TODO: getInventory function
 // TODO: shop function (get list of items)
 // TODO: buy function
 // TODO: turns? add to input menu
