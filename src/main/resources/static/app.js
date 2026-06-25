@@ -1,7 +1,9 @@
 let username, password, newCharacterName, monsterName = "";
 let character, commands, encounter = {};
-let isNewUser, isInCombat = false;
+let currentInventory = [];
+let isNewUser, isInCombat, isInInventory = false;
 
+let inputMode = "command";
 
 const townCommands = {
     "F": "Enter Forest",
@@ -13,6 +15,18 @@ const forestCommands = {
     "A": "Attack",
     "U": "Use Item",
     "R": "Return to Town"
+}
+
+//TODO:     U: "Use Item",
+const inventoryCommands = {
+    E: "Equip Item",
+    D: "Drop Item",
+    B: "Back",
+};
+
+const inventoryItemCommands = {
+    "#": "Equip Item #",
+    B: "Back",
 }
 
 const shopCommands = {
@@ -61,7 +75,6 @@ term.onData(e => {
 
         } else {
             handleCommand(input);
-            term.write("\r\n");
 
         }
         input = "";
@@ -133,6 +146,7 @@ async function handleCommand(cmd) {
     if (cmd === "F" || cmd === "f") {
         // Move character to Forest so combat can begin.
         const locChangeResult = await changePlayerLocation("FOREST");
+        location = "forest";
 
         encounter = await startCombat();
 
@@ -143,13 +157,84 @@ async function handleCommand(cmd) {
         pushLog(color(`A ${encounter.monsterName} appears!`, "1;31"));
     }
 
+    if (inputMode === "equipItem") {
+        if (cmd === "B") {
+            inputMode = "inventory";
+            commands = inventoryCommands;
+            pushLog("Back to inventory.");
+            return;
+        }
+
+        const itemNumber = Number(cmd);
+
+        if (!Number.isInteger(itemNumber) || itemNumber < 1 || itemNumber > currentInventory.length) {
+            pushLog("Invalid item number.");
+            return;
+        }
+
+        const selectedItem = currentInventory[itemNumber - 1];
+
+        await equipItem(selectedItem.id);
+
+        inputMode = "inventory";
+        commands = inventoryCommands;
+        pushLog(`Equipped ${selectedItem.itemName}.`);
+        return;
+    }
+    if (cmd === "I") {
+        const data = await getInventory();
+
+        currentInventory = data;
+
+        const tableTitle = "Inventory";
+        const tableCols = [
+            "#",
+            "Item Name",
+            "Type",
+            "Damage/Reduction",
+            "Quantity",
+            "Equipped"
+        ];
+
+        const tableRows = currentInventory.map((item, idx) => {
+            return [
+                idx + 1,
+                item.itemName,
+                item.itemType,
+                item.damage,
+                item.quantity,
+                item.equipped
+            ];
+        });
+
+        invTable = asciiTable(tableTitle, tableCols, tableRows);
+
+        isInInventory = true;
+        inputMode = "inventory";
+        commands = inventoryCommands;
+
+        pushLogLines(invTable);
+        return;
+    }
+
+    if (cmd === "E" && isInInventory) {
+        inputMode = "equipItem";
+        commands = { B: "Back" };
+        pushLog("Which item would you like to equip? Enter item #, or B to go back.");
+        return;
+    }
+
+    if (cmd === "B" && isInInventory) {
+        inputMode = "town";
+        isInInventory = false;
+        commands = townCommands;
+        pushLog("You are in town.");
+
+        return;
+    }
+
     if (cmd === "A" && isInCombat) {
         const data = await makeAttack();
-        console.log(data);
-
-        // TODO: Verify that player hp is being updated both on backend and in app
-        // should be working well on backend now. Need to verify and update where necessary here
-        // TODO: If player dies, display message, return to town
 
         character.health = data.playerHp;
 
@@ -244,7 +329,27 @@ async function makeAttack() {
     return res.json();
 }
 
-// TODO: getInventory function
+async function getInventory() {
+    const res = await fetch("/inventory/me", {
+        method: "GET",
+        headers: authHeaders()
+    });
+
+    return res.json();
+}
+
+async function equipItem(invItemId) {
+    const res = await fetch("/inventory/equip", {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({
+            itemId: invItemId
+        })
+    });
+
+    return res.json();
+}
+
 // TODO: shop function (get list of items)
 // TODO: buy function
 // TODO: turns? add to input menu
@@ -259,26 +364,31 @@ function pushLog(line) {
 }
 
 function renderScreen() {
-    const logRows = term.rows - 2; // rows available for log (1 row = commands, 1 = input)
+    const logRows = term.rows - 2;
 
-    // Move to top-left and clear
+    // Clear whole screen
     term.write('\x1b[H\x1b[2J');
 
-    // Take the last N entries that fit
     const visible = logBuffer.slice(-logRows);
-
-    // Pad top with empty lines so content sticks to the bottom of the log area
     const padding = logRows - visible.length;
+
+    // Draw log area
     for (let i = 0; i < padding; i++) {
         term.write('\r\n');
     }
 
     for (const line of visible) {
-        term.write(line + '\r\n');
+        term.write('\r' + line + '\x1b[K\r\n');
     }
 
-    // Status bar — always last two lines
-    term.write(commandList(commands) + '\r\n');
+    // Draw command/status line explicitly on second-to-last row
+    term.write(`\x1b[${term.rows - 1};1H`);
+    term.write('\x1b[K');
+    term.write(commandList(commands));
+
+    // Draw input prompt explicitly on last row
+    term.write(`\x1b[${term.rows};1H`);
+    term.write('\x1b[K');
     term.write(inputMenu());
 }
 
@@ -302,4 +412,77 @@ function inputMenu() {
         + ` Level: ` + color(character.level, 33) + ` `
         + ` Gold: ` + color(character.gold, 33) + ` `
         + `): `;
+}
+
+function pushLogLines(lines) {
+    for (const line of lines) {
+        logBuffer.push(line);
+        if (logBuffer.length > LOG_SIZE) logBuffer.shift();
+    }
+
+    renderScreen();
+}
+
+function stripAnsi(str) {
+    return String(str).replace(/\x1b\[[0-9;]*m/g, "");
+}
+
+function visibleLength(str) {
+    return stripAnsi(str).length;
+}
+
+function padRight(str, width) {
+    const diff = width - visibleLength(str);
+    return String(str) + " ".repeat(Math.max(0, diff));
+}
+
+function centerText(str, width) {
+    const len = visibleLength(str);
+    const totalPadding = Math.max(0, width - len);
+    const left = Math.floor(totalPadding / 2);
+    const right = totalPadding - left;
+    return " ".repeat(left) + str + " ".repeat(right);
+}
+
+function makeBorder(widths) {
+    return "+" + widths.map(w => "-".repeat(w + 2)).join("+") + "+";
+}
+
+function makeRow(values, widths) {
+    return "|" + values.map((value, i) => {
+        return " " + padRight(value, widths[i]) + " ";
+    }).join("|") + "|";
+}
+
+function asciiTable(title, columns, rows) {
+
+    const stringRows = rows.map(row =>
+        row.map(value => value == null ? "" : String(value))
+    );
+
+    const widths = columns.map((col, i) => {
+        const columnWidth = visibleLength(col);
+
+        const rowWidth = stringRows.reduce((max, row) => {
+            return Math.max(max, visibleLength(row[i] ?? ""));
+        }, 0);
+
+        return Math.max(columnWidth, rowWidth);
+    });
+
+    const border = makeBorder(widths);
+    const tableWidth = visibleLength(border);
+
+    const titleLine = "|" + centerText(title, tableWidth - 2) + "|";
+    const headerLine = makeRow(columns, widths);
+
+    return [
+        border,
+        titleLine,
+        border,
+        headerLine,
+        border,
+        ...stringRows.map(row => makeRow(row, widths)),
+        border
+    ];
 }
